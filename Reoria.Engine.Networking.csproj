@@ -4,12 +4,30 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Configurations>Debug;Release;Android</Configurations>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DefineConstants>RELEASE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Android'">
+    <TargetFramework>net8.0-android</TargetFramework>
+    <DefineConstants>ANDROID;TRACE</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="LiteNetLib" Version="1.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.1" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)'=='Android'">
+    <PackageReference Include="Xamarin.Essentials" Version="2.3.2" />
   </ItemGroup>
 
 </Project>
