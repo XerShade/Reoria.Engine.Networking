@@ -5,6 +5,7 @@ public interface INetListener : INetEventListener
 {
     bool IsServer { get; }
 
+    int GetLocalPort();
     void OnConfigureNetManager(NetManager netManager);
     void PollEvents();
     void Start();

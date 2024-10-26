@@ -2,17 +2,16 @@
 using LiteNetLib.Utils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Reoria.Engine.Networking.NetListeners.Interfaces;
 
 namespace Reoria.Engine.Networking.NetListeners;
 
-public class ServerNetListener : NetListener
+public class ServerNetListener : NetListener, IServerNetListener
 {
     public ServerNetListener(ILogger<NetListener> logger, IConfigurationRoot configuration) : base(logger, configuration)
     {
         this.IsServer = true;
     }
-
-    public virtual int GetLocalPort() => this.netManager.LocalPort;
 
     public override void Start() => this.netManager.Start(this.Port);
     public override void Stop() => this.netManager.Stop();

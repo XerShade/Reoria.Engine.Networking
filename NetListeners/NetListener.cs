@@ -55,6 +55,7 @@ public class NetListener : INetListener
             this.netManager.PollEvents();
         }
     }
+    public virtual int GetLocalPort() => this.netManager.LocalPort;
     public virtual void Start() { }
     public virtual void Stop() { }
     public virtual void OnConfigureNetManager(NetManager netManager) { }
