@@ -1,18 +1,19 @@
 ﻿using LiteNetLib;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Reoria.Engine.Networking.NetListeners.Interfaces;
 using System.Net;
 using System.Net.Sockets;
 
 namespace Reoria.Engine.Networking.NetListeners;
-public class NetEventListener : INetEventListener
+public class NetListener : INetListener
 {
     public const string DEFAULT_CONNECTIONKEY = "Reoria";
     public const string DEFAULT_IPADDRESS = "127.0.0.1";
     public const int DEFAULT_PORT = 5555;
 
     protected readonly NetManager netManager;
-    protected readonly ILogger<NetEventListener> logger;
+    protected readonly ILogger<NetListener> logger;
     protected readonly IConfiguration configuration;
 
     public readonly string ConnectionKey;
@@ -21,9 +22,10 @@ public class NetEventListener : INetEventListener
 
     public bool IsServer { get; protected set; } = false;
 
-    public NetEventListener(ILogger<NetEventListener> logger, IConfigurationRoot configuration)
+    public NetListener(ILogger<NetListener> logger, IConfigurationRoot configuration)
     {
-        this.netManager = new NetManager(this) { 
+        this.netManager = new NetManager(this)
+        {
             AutoRecycle = true,
         };
         this.OnConfigureNetManager(this.netManager);

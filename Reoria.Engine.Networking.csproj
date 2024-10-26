@@ -28,8 +28,4 @@
   <ItemGroup Condition="'$(Configuration)'=='Android'">
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="NetListeners\Interfaces\" />
-  </ItemGroup>
-
 </Project>

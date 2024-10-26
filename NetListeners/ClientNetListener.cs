@@ -4,11 +4,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Reoria.Engine.Networking.NetListeners;
 
-public class ClientNetEventListener : NetEventListener
+public class ClientNetListener : NetListener
 {
     private NetPeer? serverPeer = null;
 
-    public ClientNetEventListener(ILogger<NetEventListener> logger, IConfigurationRoot configuration) : base(logger, configuration)
+    public ClientNetListener(ILogger<NetListener> logger, IConfigurationRoot configuration) : base(logger, configuration)
     {
     }
 
