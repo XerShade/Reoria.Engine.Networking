@@ -5,9 +5,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Reoria.Engine.Networking.NetListeners;
 
-public class ServerNetEventListener : NetListener
+public class ServerNetListener : NetListener
 {
-    public ServerNetEventListener(ILogger<NetListener> logger, IConfigurationRoot configuration) : base(logger, configuration)
+    public ServerNetListener(ILogger<NetListener> logger, IConfigurationRoot configuration) : base(logger, configuration)
     {
         this.IsServer = true;
     }
