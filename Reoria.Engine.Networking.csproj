@@ -16,7 +16,6 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Android'">
-    <TargetFramework>net8.0-android</TargetFramework>
     <DefineConstants>ANDROID;TRACE</DefineConstants>
   </PropertyGroup>
 
@@ -27,7 +26,6 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Android'">
-    <PackageReference Include="Xamarin.Essentials" Version="2.3.2" />
   </ItemGroup>
 
 </Project>
