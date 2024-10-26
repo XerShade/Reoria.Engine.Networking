@@ -1,16 +1,15 @@
-﻿using LiteNetLib.Utils;
-using LiteNetLib;
+﻿using LiteNetLib;
+using LiteNetLib.Utils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System.Net.Sockets;
 using System.Net;
-using System.Numerics;
+using System.Net.Sockets;
 
 namespace Reoria.Engine.Networking.NetListeners;
 
 public class ServerNetEventListener(ILogger<NetEventListener> logger, IConfigurationRoot configuration) : NetEventListener(logger, configuration)
 {
-    public virtual void Start() => this.netManager.Start(Convert.ToInt32(this.configuration["Networking:Port"]));
+    public virtual void Start() => this.netManager.Start(this.Port);
     public virtual void Stop() => this.netManager.Stop();
     public virtual int GetLocalPort() => this.netManager.LocalPort;
 
@@ -38,7 +37,7 @@ public class ServerNetEventListener(ILogger<NetEventListener> logger, IConfigura
 
     public override void OnConnectionRequest(ConnectionRequest request)
     {
-        _ = request.AcceptIfKey(this.configuration["Networking:ConnectionKey"]);
+        _ = request.AcceptIfKey(this.ConnectionKey);
         base.OnConnectionRequest(request);
     }
 

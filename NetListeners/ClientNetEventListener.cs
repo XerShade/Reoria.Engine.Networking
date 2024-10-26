@@ -18,7 +18,7 @@ public class ClientNetEventListener : NetEventListener
     public virtual void Start()
     {
         _ = this.netManager.Start();
-        this.serverPeer = this.netManager.Connect(this.configuration["Networking:Address"], Convert.ToInt32(this.configuration["Networking:Port"]), this.configuration["Networking:ConnectionKey"]);
+        this.serverPeer = this.netManager.Connect(this.Address, this.Port, this.ConnectionKey);
     }
 
     public virtual void Stop() => this.netManager.Stop();
