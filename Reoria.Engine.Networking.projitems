@@ -9,5 +9,8 @@
     <Import_RootNamespace>Reoria.Engine.Networking</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Listeners\ClientNetworkListener.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Listeners\NetworkListener.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Listeners\ServerNetworkListener.cs" />
   </ItemGroup>
 </Project>
