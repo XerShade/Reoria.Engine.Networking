@@ -2,7 +2,6 @@
 using LiteNetLib.Utils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics;
 
 namespace Reoria.Engine.Networking.Listeners;
 
@@ -10,7 +9,6 @@ public class ClientNetworkListener : NetworkListener
 {
     public readonly string IPAddress;
     public readonly int Port;
-    public readonly int ConnectionTimeOut;
 
     protected NetPeer? ServerPeer { get; set; } = null;
 
@@ -18,7 +16,6 @@ public class ClientNetworkListener : NetworkListener
     {
         this.IPAddress = this.Configuration["Networking:IPAddress"] ?? this.GetDefaultIPAddress();
         this.Port = Convert.ToInt32(this.Configuration["Netowrking:Port"] ?? this.GetDefaultPort());
-        this.ConnectionTimeOut = Convert.ToInt32(this.Configuration["Netowrking:Port"] ?? this.GetDefaultConnectionTimeOut());
     }
 
     protected virtual string GetDefaultIPAddress()
@@ -26,9 +23,6 @@ public class ClientNetworkListener : NetworkListener
 
     protected virtual string GetDefaultPort()
         => "7234";
-
-    protected virtual string GetDefaultConnectionTimeOut()
-        => "30";
 
     public virtual void ConnectToServer()
     {
@@ -38,21 +32,14 @@ public class ClientNetworkListener : NetworkListener
 
             _ = Task.Run(() =>
             {
-                Stopwatch timeout = Stopwatch.StartNew();
-
-                while (this.ServerPeer.ConnectionState != ConnectionState.Connected)
+                while (this.ServerPeer.ConnectionState is not (ConnectionState.Connected or ConnectionState.Disconnected))
                 {
-                    if (timeout.Elapsed.Seconds >= this.ConnectionTimeOut)
-                    {
-                        break;
-                    }
+                    continue;
                 }
-
-                timeout.Stop();
 
                 if (this.ServerPeer.ConnectionState != ConnectionState.Connected)
                 {
-                    this.Logger.LogError("Unable to connect to the server at {ServerIP}:{ServerPort} after {Timeout} seconds.", this.IPAddress, this.Port, timeout.Elapsed.Seconds);
+                    this.Logger.LogError("Failed to connect to the server at {ServerIP}:{ServerPort}.", this.IPAddress, this.Port);
                     this.ServerPeer.Disconnect();
                     this.ServerPeer = null;
                 }
@@ -80,5 +67,13 @@ public class ClientNetworkListener : NetworkListener
         Random random = new();
         writer.Put(messages[random.Next(0, messages.Length - 1)]);
         peer.Send(writer, DeliveryMethod.ReliableOrdered);
+    }
+
+    public override void OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo)
+    {
+        this.ServerPeer?.Disconnect();
+        this.ServerPeer = null;
+
+        base.OnPeerDisconnected(peer, disconnectInfo);
     }
 }
