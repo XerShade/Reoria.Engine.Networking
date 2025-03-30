@@ -32,15 +32,15 @@ public class ClientNetworkListener : NetworkListener
 
             _ = Task.Run(() =>
             {
-                while (this.ServerPeer.ConnectionState is not (ConnectionState.Connected or ConnectionState.Disconnected))
+                while (this.ServerPeer?.ConnectionState is not (ConnectionState.Connected or ConnectionState.Disconnected))
                 {
                     continue;
                 }
 
-                if (this.ServerPeer.ConnectionState != ConnectionState.Connected)
+                if (this.ServerPeer?.ConnectionState != ConnectionState.Connected)
                 {
                     this.Logger.LogError("Failed to connect to the server at {ServerIP}:{ServerPort}.", this.IPAddress, this.Port);
-                    this.ServerPeer.Disconnect();
+                    this.ServerPeer?.Disconnect();
                     this.ServerPeer = null;
                 }
             });
