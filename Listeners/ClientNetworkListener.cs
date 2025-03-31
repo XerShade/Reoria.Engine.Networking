@@ -24,28 +24,8 @@ public class ClientNetworkListener : NetworkListener
     protected virtual string GetDefaultPort()
         => "7234";
 
-    public virtual void ConnectToServer()
-    {
-        if (this.ServerPeer is null)
-        {
-            this.ServerPeer = this.Manager.Connect(this.IPAddress, this.Port, this.ConnectionKey);
-
-            _ = Task.Run(() =>
-            {
-                while (this.ServerPeer?.ConnectionState is not (ConnectionState.Connected or ConnectionState.Disconnected))
-                {
-                    continue;
-                }
-
-                if (this.ServerPeer?.ConnectionState != ConnectionState.Connected)
-                {
-                    this.Logger.LogError("Failed to connect to the server at {ServerIP}:{ServerPort}.", this.IPAddress, this.Port);
-                    this.ServerPeer?.Disconnect();
-                    this.ServerPeer = null;
-                }
-            });
-        }
-    }
+    public virtual void ConnectToServer() 
+        => this.ServerPeer ??= this.Manager.Connect(this.IPAddress, this.Port, this.ConnectionKey);
 
     public virtual bool IsConnectedToServer()
     {
