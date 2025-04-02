@@ -2,7 +2,6 @@
 using LiteNetLib.Utils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Reoria.Engine.Common.Security.Encryption.Interfaces;
 
 namespace Reoria.Engine.Networking.Listeners;
 
@@ -13,7 +12,7 @@ public class ClientNetworkListener : NetworkListener
 
     protected NetPeer? ServerPeer { get; set; } = null;
 
-    public ClientNetworkListener(ILogger<INetEventListener> logger, IConfiguration configuration, IEncryptionService encryptionService) : base(logger, configuration, encryptionService)
+    public ClientNetworkListener(ILogger<INetEventListener> logger, IConfiguration configuration) : base(logger, configuration)
     {
         this.IPAddress = this.Configuration["Networking:IPAddress"] ?? this.GetDefaultIPAddress();
         this.Port = Convert.ToInt32(this.Configuration["Netowrking:Port"] ?? this.GetDefaultPort());
@@ -39,26 +38,16 @@ public class ClientNetworkListener : NetworkListener
         return true;
     }
 
-    protected override void SendSecretMessage()
+    public override void OnPeerConnected(NetPeer peer)
     {
+        base.OnPeerConnected(peer);
+
         string[] messages = ["Hello world!", "Testing 123.", DateTime.Now.ToString()];
-        NetDataWriter encryptedWriter = new();
-        Random random = new();
-
-        string message = messages[random.Next(0, messages.Length)];
-        this.Logger.LogInformation("Encrypting and sending message: '{message}'", message);
-        encryptedWriter.Put(message);
-        byte[] encryptedData = this.EncryptionService.Encrypt(encryptedWriter.Data);
-
         NetDataWriter writer = new();
-        writer.Put("MESSAGE");
-        writer.Put(encryptedData);
-
-        this.ServerPeer?.Send(writer, DeliveryMethod.ReliableOrdered);
-
-        base.SendSecretMessage();
+        Random random = new();
+        writer.Put(messages[random.Next(0, messages.Length - 1)]);
+        peer.Send(writer, DeliveryMethod.ReliableOrdered);
     }
-
 
     public override void OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo)
     {
