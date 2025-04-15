@@ -12,5 +12,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Listeners\ClientNetworkListener.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Listeners\NetworkListener.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Listeners\ServerNetworkListener.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Sockets\Interfaces\ISecureSocket.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Sockets\SecureClientSocket.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Sockets\SecureServerSocket.cs" />
   </ItemGroup>
 </Project>
