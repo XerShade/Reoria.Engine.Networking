@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Reoria.Engine.Networking.Sockets.Data;
 using Reoria.Engine.Networking.Sockets.Interfaces;
 using System.Collections.Concurrent;
 using System.Net;
-using System.Net.Security;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
@@ -15,7 +15,7 @@ public class SecureServerSocket : ISecureSocket
     protected readonly ILogger<ISecureSocket> Logger;
     protected readonly int MaxConnections;
     protected readonly int Port;
-    protected readonly ConcurrentDictionary<Guid, SslStream> Connections;
+    protected readonly ConcurrentDictionary<Guid, SecureSocketConnection> Connections;
     protected readonly X509Certificate2 Certificate;
     protected TcpListener? Listener;
 
@@ -75,9 +75,10 @@ public class SecureServerSocket : ISecureSocket
         {
             this.Listener?.Stop();
 
-            foreach (KeyValuePair<Guid, SslStream> connection in this.Connections)
+            foreach (SecureSocketConnection connection in this.Connections.Values)
             {
-                connection.Value.Close();
+                connection.SslStream.Close();
+                connection.TcpClient.Close();
             }
             this.Connections.Clear();
 
@@ -87,53 +88,60 @@ public class SecureServerSocket : ISecureSocket
 
     public virtual async Task SendAsync(Guid connectionId, byte[] data)
     {
-        if (this.Connections.TryGetValue(connectionId, out SslStream? sslStream))
+        try
         {
-            this.Logger.LogInformation("Sending data of length '{DataLength}' to '{ConnectionId}'.", data.Length, connectionId);
-            await sslStream.WriteAsync(data);
+            if(this.Connections.TryGetValue(connectionId, out SecureSocketConnection connection))
+            {
+                if (connection.SslStream is not null)
+                {
+                    this.Logger.LogInformation("Sending data of length '{DataLength}' to '{ConnectionId}'.", data.Length, connectionId);
+                    await connection.SslStream.WriteAsync(data);
+                }
+            }
+        }
+        catch(Exception ex)
+        {
+            this.Logger.LogError(ex, "Unable to send data of length '{DataLength}' to '{ConnectionId}', reason: {Message}", data.Length, connectionId, ex.Message);
         }
     }
 
-    protected virtual async Task HandleConnectionAsync(TcpClient connection)
+    protected virtual async Task HandleConnectionAsync(TcpClient incomingConnection)
     {
-        Guid connectionId = Guid.NewGuid();
-        SslStream sslStream = new(connection.GetStream(), false);
+        SecureSocketConnection connection = new(incomingConnection, new(incomingConnection.GetStream(), false));
 
-        await sslStream.AuthenticateAsServerAsync(this.Certificate, false, false);
-        this.Logger.LogInformation("Recieved new secure socket connection from '{ConnectionEndpoint}'.", connection.Client.RemoteEndPoint);
+        await connection.SslStream.AuthenticateAsServerAsync(this.Certificate, false, false);
+        this.Logger.LogInformation("Recieved new secure socket connection from '{ConnectionEndpoint}'.", incomingConnection.Client.RemoteEndPoint);
 
-        if (this.Connections.TryAdd(connectionId, sslStream))
+        if (this.Connections.TryAdd(connection.Guid, connection))
         {
-            byte[] buffer = new byte[4096];
-
             try
             {
                 while (true)
                 {
-                    int bytesRead = await sslStream.ReadAsync(buffer);
+                    int bytesRead = await connection.SslStream.ReadAsync(connection.Buffer);
 
                     if (bytesRead <= 0)
                     {
                         break;
                     }
 
-                    byte[] data = buffer.Take(bytesRead).ToArray();
+                    byte[] data = connection.Buffer.Take(bytesRead).ToArray();
 
                     if (this.OnMessageReceived != null)
                     {
-                        await this.OnMessageReceived.Invoke(connectionId, data);
+                        await this.OnMessageReceived.Invoke(connection.Guid, data);
                     }
                 }
             }
             catch { }
 
-            if (this.Connections.TryRemove(connectionId, out _))
+            if (this.Connections.TryRemove(connection.Guid, out _))
             {
                 if (this.OnClientDisconnected != null)
                 {
-                    await this.OnClientDisconnected.Invoke(connectionId);
+                    await this.OnClientDisconnected.Invoke(connection.Guid);
                 }
-                this.Logger.LogInformation("Closed secure socket connection from '{ConnectionEndpoint}'.", connection.Client.LocalEndPoint);
+                this.Logger.LogInformation("Closed secure socket connection from '{ConnectionEndpoint}'.", connection.TcpClient.Client.RemoteEndPoint);
             }
         }
     }
