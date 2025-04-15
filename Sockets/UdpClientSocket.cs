@@ -2,32 +2,31 @@
 using LiteNetLib.Utils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Reoria.Engine.Networking.Sockets.Interfaces;
 
-namespace Reoria.Engine.Networking.Listeners;
+namespace Reoria.Engine.Networking.Sockets;
 
-public class ClientNetworkListener : NetworkListener
+public class UdpClientSocket : UdpSocket
 {
-    public readonly string IPAddress;
-    public readonly int Port;
+    protected readonly string IPAddress;
+    protected NetPeer? ServerPeer;
 
-    protected NetPeer? ServerPeer { get; set; } = null;
-
-    public ClientNetworkListener(ILogger<INetEventListener> logger, IConfiguration configuration) : base(logger, configuration)
+    public UdpClientSocket(ILogger<ISocket> logger, IConfiguration configuration) : base(logger, configuration)
     {
-        this.IPAddress = this.Configuration["Networking:IPAddress"] ?? this.GetDefaultIPAddress();
-        this.Port = Convert.ToInt32(this.Configuration["Networking:Port"] ?? this.GetDefaultPort());
+        this.IPAddress = configuration["Networking:IPAddress"] ?? this.GetDefaultIPAddress();
     }
 
     protected virtual string GetDefaultIPAddress()
         => "127.0.0.1";
 
-    protected virtual string GetDefaultPort()
-        => "7234";
+    public override bool ConnectToServer()
+    {
+        this.ServerPeer ??= this.Manager.Connect(this.IPAddress, this.Port, string.Empty);
 
-    public virtual void ConnectToServer() 
-        => this.ServerPeer ??= this.Manager.Connect(this.IPAddress, this.Port, this.ConnectionKey);
+        return this.ServerPeer is not null;
+    }
 
-    public virtual bool IsConnectedToServer()
+    public override bool IsConnectedToServer()
     {
         if (this.ServerPeer is null)
         { return false; }
@@ -36,6 +35,14 @@ public class ClientNetworkListener : NetworkListener
         { return false; }
 
         return true;
+    }
+
+    protected override void OnStop(NetManager netManager)
+    {
+        this.ServerPeer?.Disconnect();
+        this.ServerPeer = null;
+
+        base.OnStop(netManager);
     }
 
     public override void OnPeerConnected(NetPeer peer)
