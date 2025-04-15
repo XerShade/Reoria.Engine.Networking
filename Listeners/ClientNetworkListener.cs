@@ -15,7 +15,7 @@ public class ClientNetworkListener : NetworkListener
     public ClientNetworkListener(ILogger<INetEventListener> logger, IConfiguration configuration) : base(logger, configuration)
     {
         this.IPAddress = this.Configuration["Networking:IPAddress"] ?? this.GetDefaultIPAddress();
-        this.Port = Convert.ToInt32(this.Configuration["Netowrking:Port"] ?? this.GetDefaultPort());
+        this.Port = Convert.ToInt32(this.Configuration["Networking:Port"] ?? this.GetDefaultPort());
     }
 
     protected virtual string GetDefaultIPAddress()

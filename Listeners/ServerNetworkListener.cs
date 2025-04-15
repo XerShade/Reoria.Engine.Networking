@@ -12,7 +12,7 @@ public class ServerNetworkListener : NetworkListener
     public ServerNetworkListener(ILogger<INetEventListener> logger, IConfiguration configuration) : base(logger, configuration)
     {
         this.MaxConnections = Convert.ToInt32(this.Configuration["Networking:MaxConnections"] ?? this.GetDefaultMaxConnections());
-        this.Port = Convert.ToInt32(this.Configuration["Netowrking:Port"] ?? this.GetDefaultPort());
+        this.Port = Convert.ToInt32(this.Configuration["Networking:Port"] ?? this.GetDefaultPort());
     }
 
     protected virtual string GetDefaultMaxConnections()
