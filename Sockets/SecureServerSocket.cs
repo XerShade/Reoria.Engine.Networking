@@ -62,7 +62,7 @@ public class SecureServerSocket : SecureSocket
         while (!cancellationToken.IsCancellationRequested)
         {
             TcpClient connection = await this.Listener.AcceptTcpClientAsync(cancellationToken);
-            _ = this.HandleConnectionAsync(connection);
+            _ = this.HandleConnectionAsync(connection, cancellationToken);
         }
     }
 
@@ -102,7 +102,7 @@ public class SecureServerSocket : SecureSocket
         }
     }
 
-    protected virtual async Task HandleConnectionAsync(TcpClient incomingConnection)
+    protected virtual async Task HandleConnectionAsync(TcpClient incomingConnection, CancellationToken cancellationToken)
     {
         SecureSocketConnection connection = new(incomingConnection, new(incomingConnection.GetStream(), false));
 
@@ -113,19 +113,7 @@ public class SecureServerSocket : SecureSocket
         {
             try
             {
-                while (true)
-                {
-                    int bytesRead = await connection.SslStream.ReadAsync(connection.Buffer);
-
-                    if (bytesRead <= 0)
-                    {
-                        break;
-                    }
-
-                    byte[] data = connection.Buffer.Take(bytesRead).ToArray();
-
-                    await this.InvokeOnMessageReceived(connection.Guid, data);
-                }
+                await this.ReadStreamBuffer(connection, cancellationToken);
             }
             catch { }
 

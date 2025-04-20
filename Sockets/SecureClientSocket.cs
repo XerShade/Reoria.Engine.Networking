@@ -65,22 +65,7 @@ public class SecureClientSocket : SecureSocket
     {
         try
         {
-            while (!cancellationToken.IsCancellationRequested)
-            {
-                if(this.ServerConnection.SslStream != null)
-                {
-                    int bytesRead = await this.ServerConnection.SslStream.ReadAsync(this.ServerConnection.Buffer, cancellationToken);
-
-                    if (bytesRead <= 0)
-                    {
-                        break;
-                    }
-
-                    byte[] data = this.ServerConnection.Buffer.Take(bytesRead).ToArray();
-
-                    await this.InvokeOnMessageReceived(this.ServerConnection.Guid, data);
-                }                
-            }
+            await this.ReadStreamBuffer(this.ServerConnection, cancellationToken);
         }
         catch { }
 
