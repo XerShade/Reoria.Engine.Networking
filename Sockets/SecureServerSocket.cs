@@ -12,18 +12,16 @@ namespace Reoria.Engine.Networking.Sockets;
 
 public class SecureServerSocket : SecureSocket
 {
-    protected readonly ILogger<ISecureSocket> Logger;
     protected readonly int MaxConnections;
     protected readonly int Port;
     protected readonly ConcurrentDictionary<Guid, SecureSocketConnection> Connections;
     protected readonly X509Certificate2 Certificate;
     protected TcpListener? Listener;
 
-    public SecureServerSocket(ILogger<ISecureSocket> logger, IConfiguration configuration)
+    public SecureServerSocket(ILogger<ISecureSocket> logger, IConfiguration configuration) : base(logger)
     {
         string? assemblyName = Assembly.GetExecutingAssembly().GetName().Name ?? "Reoria.Server";
 
-        this.Logger = logger;
         this.MaxConnections = Convert.ToInt32(configuration["Networking:MaxConnections"] ?? this.GetDefaultMaxConnections());
         this.Port = Convert.ToInt32(configuration["Networking:SecurePort"] ?? this.DefaultSecurePort());
         this.Connections = [];
@@ -89,11 +87,7 @@ public class SecureServerSocket : SecureSocket
         {
             if(this.Connections.TryGetValue(connectionId, out SecureSocketConnection connection))
             {
-                if (connection.SslStream is not null)
-                {
-                    this.Logger.LogInformation("Sending data of length '{DataLength}' to '{ConnectionId}'.", data.Length, connectionId);
-                    await connection.SslStream.WriteAsync(data);
-                }
+                await base.SendAsync(connection, data);
             }
         }
         catch(Exception ex)
@@ -113,6 +107,7 @@ public class SecureServerSocket : SecureSocket
         {
             try
             {
+                this.Logger.LogInformation("Opened new secure socket connection from '{ConnectionEndpoint}'.", incomingConnection.Client.RemoteEndPoint);
                 await this.ReadStreamBuffer(connection, cancellationToken);
             }
             catch { }
@@ -122,6 +117,11 @@ public class SecureServerSocket : SecureSocket
                 await this.InvokeOnClientDisconnected(connection.Guid);
                 this.Logger.LogInformation("Closed secure socket connection from '{ConnectionEndpoint}'.", connection.TcpClient.Client.RemoteEndPoint);
             }
+        }
+        else
+        {
+            this.Logger.LogError("Failed to add new connection to dictionary, '{ConnectionId}' already exists.", connection.Guid);
+            return;
         }
     }
 }

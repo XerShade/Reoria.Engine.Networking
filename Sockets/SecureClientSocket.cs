@@ -10,14 +10,12 @@ namespace Reoria.Engine.Networking.Sockets;
 
 public class SecureClientSocket : SecureSocket
 {
-    protected readonly ILogger<ISecureSocket> Logger;
     protected readonly string IPAddress;
     protected readonly int Port;
     protected SecureSocketConnection ServerConnection;
 
-    public SecureClientSocket(ILogger<ISecureSocket> logger, IConfiguration configuration)
+    public SecureClientSocket(ILogger<ISecureSocket> logger, IConfiguration configuration) : base(logger)
     {
-        this.Logger = logger;
         this.IPAddress = configuration["Networking:IPAddress"] ?? this.GetDefaultIPAddress();
         this.Port = Convert.ToInt32(configuration["Networking:SecurePort"] ?? this.GetDefaultSecurePort());
         this.ServerConnection = new();
@@ -35,8 +33,7 @@ public class SecureClientSocket : SecureSocket
     {
         if (this.ServerConnection.SslStream != null)
         {
-            this.Logger.LogInformation("Sending data of length '{DataLength}' to '{ConnectionId}'.", data.Length, this.ServerConnection.Guid);
-            await this.ServerConnection.SslStream.WriteAsync(data);
+            await this.SendAsync(this.ServerConnection, data);
         }
     }
 
@@ -53,7 +50,7 @@ public class SecureClientSocket : SecureSocket
             EnabledSslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13,
             CertificateRevocationCheckMode = X509RevocationMode.NoCheck
         }, cancellationToken);
-        this.Logger.LogInformation("Establishing secure connection to '{IPAddress}:{Port}'.", this.IPAddress, this.Port);
+        this.Logger.LogInformation("Established secure connection to '{IPAddress}:{Port}'.", this.IPAddress, this.Port);
 
         _ = Task.Run(() => this.ReceiveLoop(cancellationToken), cancellationToken);
     }
@@ -65,6 +62,7 @@ public class SecureClientSocket : SecureSocket
     {
         try
         {
+            this.Logger.LogInformation("Opened secure socket connection to the server.");
             await this.ReadStreamBuffer(this.ServerConnection, cancellationToken);
         }
         catch { }
