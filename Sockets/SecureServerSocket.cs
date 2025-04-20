@@ -10,7 +10,7 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace Reoria.Engine.Networking.Sockets;
 
-public class SecureServerSocket : ISecureSocket
+public class SecureServerSocket : SecureSocket
 {
     protected readonly ILogger<ISecureSocket> Logger;
     protected readonly int MaxConnections;
@@ -18,9 +18,6 @@ public class SecureServerSocket : ISecureSocket
     protected readonly ConcurrentDictionary<Guid, SecureSocketConnection> Connections;
     protected readonly X509Certificate2 Certificate;
     protected TcpListener? Listener;
-
-    public event Func<Guid, byte[], Task> OnMessageReceived = default!;
-    public event Func<Guid, Task> OnClientDisconnected = default!;
 
     public SecureServerSocket(ILogger<ISecureSocket> logger, IConfiguration configuration)
     {
@@ -56,7 +53,7 @@ public class SecureServerSocket : ISecureSocket
 #pragma warning restore SYSLIB0057 // Type or member is obsolete
     }
 
-    public virtual async Task StartAsync(CancellationToken cancellationToken = default)
+    public override async Task StartAsync(CancellationToken cancellationToken = default)
     {
         this.Listener = new TcpListener(IPAddress.Any, this.Port);
         this.Listener.Start();
@@ -69,7 +66,7 @@ public class SecureServerSocket : ISecureSocket
         }
     }
 
-    public virtual async Task StopAsync()
+    public override async Task StopAsync()
     {
         await Task.Run(() =>
         {
@@ -86,7 +83,7 @@ public class SecureServerSocket : ISecureSocket
         });
     }
 
-    public virtual async Task SendAsync(Guid connectionId, byte[] data)
+    public override async Task SendAsync(Guid connectionId, byte[] data)
     {
         try
         {
@@ -127,28 +124,16 @@ public class SecureServerSocket : ISecureSocket
 
                     byte[] data = connection.Buffer.Take(bytesRead).ToArray();
 
-                    if (this.OnMessageReceived != null)
-                    {
-                        await this.OnMessageReceived.Invoke(connection.Guid, data);
-                    }
+                    await this.InvokeOnMessageReceived(connection.Guid, data);
                 }
             }
             catch { }
 
             if (this.Connections.TryRemove(connection.Guid, out _))
             {
-                if (this.OnClientDisconnected != null)
-                {
-                    await this.OnClientDisconnected.Invoke(connection.Guid);
-                }
+                await this.InvokeOnClientDisconnected(connection.Guid);
                 this.Logger.LogInformation("Closed secure socket connection from '{ConnectionEndpoint}'.", connection.TcpClient.Client.RemoteEndPoint);
             }
         }
     }
-
-    public Task ConnectAsync(CancellationToken cancellationToken)
-        => Task.CompletedTask;
-
-    public bool IsConnectedToServer()
-        => false;
 }

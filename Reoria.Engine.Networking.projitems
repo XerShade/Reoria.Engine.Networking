@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\Data\SecureSocketConnection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Sockets\SecureSocket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\UdpClientSocket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\Interfaces\ISecureSocket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\Interfaces\ISocket.cs" />

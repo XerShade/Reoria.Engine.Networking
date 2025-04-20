@@ -8,15 +8,12 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace Reoria.Engine.Networking.Sockets;
 
-public class SecureClientSocket : ISecureSocket
+public class SecureClientSocket : SecureSocket
 {
     protected readonly ILogger<ISecureSocket> Logger;
     protected readonly string IPAddress;
     protected readonly int Port;
     protected SecureSocketConnection ServerConnection;
-
-    public event Func<Guid, byte[], Task> OnMessageReceived = default!;
-    public event Func<Guid, Task> OnClientDisconnected = default!;
 
     public SecureClientSocket(ILogger<ISecureSocket> logger, IConfiguration configuration)
     {
@@ -34,13 +31,7 @@ public class SecureClientSocket : ISecureSocket
     protected virtual string GetDefaultSecurePort()
         => "7235";
 
-    public Task StartAsync(CancellationToken cancellationToken = default)
-        => Task.CompletedTask;
-
-    public Task StopAsync()
-        => Task.CompletedTask;
-
-    public async Task SendAsync(Guid connectionId, byte[] data)
+    public override async Task SendAsync(Guid connectionId, byte[] data)
     {
         if (this.ServerConnection.SslStream != null)
         {
@@ -49,7 +40,7 @@ public class SecureClientSocket : ISecureSocket
         }
     }
 
-    public async Task ConnectAsync(CancellationToken cancellationToken = default)
+    public override async Task ConnectAsync(CancellationToken cancellationToken = default)
     {
         this.ServerConnection.TcpClient ??= new();
         await this.ServerConnection.TcpClient.ConnectAsync(this.IPAddress, this.Port, cancellationToken);
@@ -87,23 +78,17 @@ public class SecureClientSocket : ISecureSocket
 
                     byte[] data = this.ServerConnection.Buffer.Take(bytesRead).ToArray();
 
-                    if (this.OnMessageReceived != null)
-                    {
-                        await this.OnMessageReceived.Invoke(this.ServerConnection.Guid, data);
-                    }
+                    await this.InvokeOnMessageReceived(this.ServerConnection.Guid, data);
                 }                
             }
         }
         catch { }
 
-        if (this.OnClientDisconnected != null)
-        {
-            await this.OnClientDisconnected.Invoke(this.ServerConnection.Guid);
-        }
+        await this.InvokeOnClientDisconnected(this.ServerConnection.Guid);
         this.Logger.LogInformation("Closed secure socket connection to the server.");
     }
 
-    public virtual bool IsConnectedToServer()
+    public override bool IsConnectedToServer()
     {
         if (this.ServerConnection.TcpClient != null)
         {
