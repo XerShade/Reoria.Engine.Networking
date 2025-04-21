@@ -11,12 +11,8 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\Data\SecureSocketConnection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\SecureSocket.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Sockets\UdpClientSocket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\Interfaces\ISecureSocket.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Sockets\Interfaces\ISocket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\SecureClientSocket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\SecureServerSocket.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Sockets\UdpServerSocket.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Sockets\UdpSocket.cs" />
   </ItemGroup>
 </Project>
