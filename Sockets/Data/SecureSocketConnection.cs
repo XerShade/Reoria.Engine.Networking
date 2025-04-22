@@ -41,4 +41,10 @@ public struct SecureSocketConnection
         this.TcpClient = tcpClient ?? throw new ArgumentNullException(nameof(tcpClient));
         this.SslStream = sslStream ?? throw new ArgumentNullException(nameof(sslStream));
     }
+
+    public readonly void Close()
+    {
+        this.TcpClient?.Close();
+        this.SslStream?.Close();
+    }
 }
