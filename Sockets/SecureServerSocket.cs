@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 
 namespace Reoria.Engine.Networking.Sockets;
 
@@ -85,12 +86,12 @@ public class SecureServerSocket : SecureSocket
     {
         try
         {
-            if(this.Connections.TryGetValue(connectionId, out SecureSocketConnection connection))
+            if (this.Connections.TryGetValue(connectionId, out SecureSocketConnection connection))
             {
                 await base.SendAsync(connection, data);
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             this.Logger.LogError(ex, "Unable to send data of length '{DataLength}' to '{ConnectionId}', reason: {Message}", data.Length, connectionId, ex.Message);
         }
@@ -102,6 +103,20 @@ public class SecureServerSocket : SecureSocket
 
         await connection.SslStream.AuthenticateAsServerAsync(this.Certificate, false, false);
         this.Logger.LogInformation("Recieved new secure socket connection from '{ConnectionEndpoint}'.", incomingConnection.Client.RemoteEndPoint);
+
+        if (this.Connections.Count >= this.MaxConnections)
+        {
+            byte[] message = Encoding.ASCII.GetBytes("The server has reached the maximum amount of connections allowed. Please try again later.");
+
+            await this.SendAsync(connection, message, cancellationToken);
+
+            this.Logger.LogInformation("Rejected new secure socket connection from '{ConnectionEndpoint}', reason: {Message}",
+                incomingConnection.Client.RemoteEndPoint, "The server has reached the maximum amount of connections allowed.");
+
+            connection.Close();
+
+            return;
+        }
 
         if (this.Connections.TryAdd(connection.Guid, connection))
         {
