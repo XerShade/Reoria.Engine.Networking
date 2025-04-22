@@ -68,6 +68,8 @@ public class SecureClientSocket : SecureSocket
         catch { }
 
         await this.InvokeOnClientDisconnected(this.ServerConnection.Guid);
+        this.ServerConnection.Close();
+        this.ServerConnection = new();
         this.Logger.LogInformation("Closed secure socket connection to the server.");
     }
 
