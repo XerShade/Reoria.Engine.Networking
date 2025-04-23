@@ -14,6 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Packets\Interface\IPacketFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Packets\Interface\IPacketHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Packets\Interface\IPacketSender.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Packets\WelcomePacket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sessions\Interfaces\ISessionService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\Data\SecureSocketConnection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\Interfaces\ISocket.cs" />
