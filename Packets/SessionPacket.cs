@@ -3,7 +3,7 @@ using Reoria.Engine.Networking.Packets.Interface;
 
 namespace Reoria.Engine.Networking.Packets;
 
-public class WelcomePacket : IPacket
+public class SessionPacket : IPacket
 {
     public Guid PlayerGuid = Guid.Empty;
     public string UdpSessionKey = string.Empty;
