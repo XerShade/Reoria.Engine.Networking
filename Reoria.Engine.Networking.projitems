@@ -9,7 +9,14 @@
     <Import_RootNamespace>Reoria.Engine.Networking</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\INetworkContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Packets\Interface\IPacket.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Packets\Interface\IPacketFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Packets\Interface\IPacketHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Packets\Interface\IPacketSender.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Sessions\Interfaces\ISessionService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\Data\SecureSocketConnection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Sockets\Interfaces\ISocket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\SecureSocket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\Interfaces\ISecureSocket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\SecureClientSocket.cs" />
