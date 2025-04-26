@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Reoria.Engine.Networking.Certificates.Interfaces;
 using Reoria.Engine.Networking.Sockets.Data;
 using Reoria.Engine.Networking.Sockets.Interfaces;
 using System.Collections.Concurrent;
@@ -16,17 +17,17 @@ public class SecureServerSocket : SecureSocket
     protected readonly int MaxConnections;
     protected readonly int Port;
     protected readonly ConcurrentDictionary<Guid, SecureSocketConnection> Connections;
-    protected readonly X509Certificate2 Certificate;
+    protected readonly X509Certificate Certificate;
     protected TcpListener? Listener;
 
-    public SecureServerSocket(ILogger<ISecureSocket> logger, IConfiguration configuration) : base(logger)
+    public SecureServerSocket(ILogger<ISecureSocket> logger, IConfiguration configuration, ICertificateProvider certificateProvider) : base(logger)
     {
         string? assemblyName = Assembly.GetExecutingAssembly().GetName().Name ?? "Reoria.Server";
 
         this.MaxConnections = Convert.ToInt32(configuration["Networking:MaxConnections"] ?? this.GetDefaultMaxConnections());
         this.Port = Convert.ToInt32(configuration["Networking:SecurePort"] ?? this.DefaultSecurePort());
         this.Connections = [];
-        this.Certificate = this.LoadCertificateFromPem(
+        this.Certificate = certificateProvider.LoadCertificateFromFile(
             configuration["Networking:CertificatePath"] ?? $"{assemblyName}.pem".ToLower(),
             configuration["Networking:CertificateKeyPath"] ?? $"{assemblyName}.key.pem".ToLower());
 
@@ -38,19 +39,6 @@ public class SecureServerSocket : SecureSocket
 
     protected virtual string DefaultSecurePort()
         => "7235";
-
-    protected virtual X509Certificate2 LoadCertificateFromPem(string certPath, string keyPath)
-    {
-        this.Logger.LogInformation("Reading secure socket certificate from '{Path}'.", certPath);
-        string certPem = File.ReadAllText(certPath);
-        this.Logger.LogInformation("Reading secure socket certificate key from '{Path}'.", keyPath);
-        string keyPem = File.ReadAllText(keyPath);
-
-#pragma warning disable SYSLIB0057 // Type or member is obsolete
-        using X509Certificate2 cert = X509Certificate2.CreateFromPem(certPem, keyPem);
-        return new X509Certificate2(cert.Export(X509ContentType.Pkcs12));
-#pragma warning restore SYSLIB0057 // Type or member is obsolete
-    }
 
     public override async Task StartAsync(CancellationToken cancellationToken = default)
     {

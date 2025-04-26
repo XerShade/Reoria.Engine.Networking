@@ -9,6 +9,8 @@
     <Import_RootNamespace>Reoria.Engine.Networking</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Certificates\Interfaces\ICertificateProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Certificates\X509CertificateProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\INetworkContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Packets\Interface\IPacket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Packets\Interface\IPacketFactory.cs" />
