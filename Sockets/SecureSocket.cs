@@ -1,13 +1,16 @@
 ﻿using Microsoft.Extensions.Logging;
+using Reoria.Engine.Networking.Packets.Interfaces;
 using Reoria.Engine.Networking.Sockets.Data;
 using Reoria.Engine.Networking.Sockets.Interfaces;
 using System.Buffers.Binary;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Reoria.Engine.Networking.Sockets;
 
-public abstract class SecureSocket(ILogger<ISecureSocket> logger) : ISecureSocket
+public abstract class SecureSocket(ILogger<ISecureSocket> logger, IPacketRegistry packetRegistry) : ISecureSocket
 {
     protected readonly ILogger<ISecureSocket> Logger = logger;
+    protected readonly IPacketRegistry PacketRegistry = packetRegistry;
 
     public event Func<Guid, byte[], Task> OnMessageReceived = default!;
     public event Func<Guid, Task> OnClientDisconnected = default!;
@@ -22,6 +25,12 @@ public abstract class SecureSocket(ILogger<ISecureSocket> logger) : ISecureSocke
         => Task.CompletedTask;
 
     public virtual Task SendAsync(Guid connectionId, byte[] data)
+        => Task.CompletedTask;
+
+    public virtual Task SendAsync<TPacket>(Guid connectionId) where TPacket : IPacket
+        => Task.CompletedTask;
+
+    public virtual Task SendAsync(Guid connectionId, Type packetType)
         => Task.CompletedTask;
 
     public virtual Task ConnectAsync(CancellationToken cancellationToken = default)
@@ -75,6 +84,8 @@ public abstract class SecureSocket(ILogger<ISecureSocket> logger) : ISecureSocke
             {
                 this.Logger.LogInformation("Read data of length '{DataLength}' from '{ConnectionId}'.", payload.Length, connection.Guid);
                 await (this.OnMessageReceived?.Invoke(connection.Guid, payload) ?? Task.CompletedTask);
+
+                this.PacketRegistry.HandleIncomingData(payload);
             }
         }
     }

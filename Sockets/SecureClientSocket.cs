@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using LiteNetLib.Utils;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Reoria.Engine.Networking.Packets.Interfaces;
 using Reoria.Engine.Networking.Sockets.Data;
 using Reoria.Engine.Networking.Sockets.Interfaces;
 using System.Net.Security;
@@ -14,7 +16,7 @@ public class SecureClientSocket : SecureSocket
     protected readonly int Port;
     protected SecureSocketConnection ServerConnection;
 
-    public SecureClientSocket(ILogger<ISecureSocket> logger, IConfiguration configuration) : base(logger)
+    public SecureClientSocket(ILogger<ISecureSocket> logger, IConfiguration configuration, IPacketRegistry packetRegistry) : base(logger, packetRegistry)
     {
         this.IPAddress = configuration["Networking:IPAddress"] ?? this.GetDefaultIPAddress();
         this.Port = Convert.ToInt32(configuration["Networking:SecurePort"] ?? this.GetDefaultSecurePort());
@@ -35,6 +37,20 @@ public class SecureClientSocket : SecureSocket
         {
             await this.SendAsync(this.ServerConnection, data);
         }
+    }
+
+    public override async Task SendAsync<TPacket>(Guid connectionId)
+    {
+        NetDataWriter writer = this.PacketRegistry.HandleOutgoingData<TPacket>();
+
+        await this.SendAsync(connectionId, writer.Data);
+    }
+
+    public override async Task SendAsync(Guid connectionId, Type packetType)
+    {
+        NetDataWriter writer = this.PacketRegistry.HandleOutgoingData(packetType);
+
+        await this.SendAsync(connectionId, writer.Data);
     }
 
     public override async Task ConnectAsync(CancellationToken cancellationToken = default)

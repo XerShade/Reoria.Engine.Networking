@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using LiteNetLib.Utils;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Reoria.Engine.Networking.Certificates.Interfaces;
+using Reoria.Engine.Networking.Packets.Interfaces;
 using Reoria.Engine.Networking.Sockets.Data;
 using Reoria.Engine.Networking.Sockets.Interfaces;
 using System.Collections.Concurrent;
@@ -9,6 +11,7 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Reoria.Engine.Networking.Sockets;
 
@@ -20,7 +23,7 @@ public class SecureServerSocket : SecureSocket
     protected readonly X509Certificate Certificate;
     protected TcpListener? Listener;
 
-    public SecureServerSocket(ILogger<ISecureSocket> logger, IConfiguration configuration, ICertificateProvider certificateProvider) : base(logger)
+    public SecureServerSocket(ILogger<ISecureSocket> logger, IConfiguration configuration, ICertificateProvider certificateProvider, IPacketRegistry packetRegistry) : base(logger, packetRegistry)
     {
         string? assemblyName = Assembly.GetExecutingAssembly().GetName().Name ?? "Reoria.Server";
 
@@ -82,6 +85,34 @@ public class SecureServerSocket : SecureSocket
         catch (Exception ex)
         {
             this.Logger.LogError(ex, "Unable to send data of length '{DataLength}' to '{ConnectionId}', reason: {Message}", data.Length, connectionId, ex.Message);
+        }
+    }
+
+    public override async Task SendAsync<TPacket>(Guid connectionId)
+    {
+        try
+        {
+            NetDataWriter writer = this.PacketRegistry.HandleOutgoingData<TPacket>();
+
+            await this.SendAsync(connectionId, writer.Data);
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, "Unable to send packet '{PacketType}' to '{ConnectionId}', reason: {Message}", typeof(TPacket).Name, connectionId, ex.Message);
+        }
+    }
+
+    public override async Task SendAsync(Guid connectionId, Type packetType)
+    {
+        try
+        {
+            NetDataWriter writer = this.PacketRegistry.HandleOutgoingData(packetType);
+
+            await this.SendAsync(connectionId, writer.Data);
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, "Unable to send packet '{PacketType}' to '{ConnectionId}', reason: {Message}", packetType.Name, connectionId, ex.Message);
         }
     }
 
