@@ -11,7 +11,6 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Reoria.Engine.Networking.Sockets;
 
@@ -23,7 +22,7 @@ public class SecureServerSocket : SecureSocket
     protected readonly X509Certificate Certificate;
     protected TcpListener? Listener;
 
-    public SecureServerSocket(ILogger<ISecureSocket> logger, IConfiguration configuration, ICertificateProvider certificateProvider, IPacketRegistry packetRegistry) : base(logger, packetRegistry)
+    public SecureServerSocket(ILogger<ISecureSocket> logger, IConfiguration configuration, ICertificateProvider certificateProvider, IPacketRegistry packetRegistry, ISocketCancellationRequest cancellationRequest) : base(logger, packetRegistry, cancellationRequest)
     {
         string? assemblyName = Assembly.GetExecutingAssembly().GetName().Name ?? "Reoria.Server";
 
@@ -142,6 +141,7 @@ public class SecureServerSocket : SecureSocket
             try
             {
                 this.Logger.LogInformation("Opened new secure socket connection from '{ConnectionEndpoint}'.", incomingConnection.Client.RemoteEndPoint);
+                await this.InvokeOnClientConnected(connection.Guid);
                 await this.ReadStreamBuffer(connection, cancellationToken);
             }
             catch { }

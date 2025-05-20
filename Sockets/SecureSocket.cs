@@ -3,17 +3,21 @@ using Reoria.Engine.Networking.Packets.Interfaces;
 using Reoria.Engine.Networking.Sockets.Data;
 using Reoria.Engine.Networking.Sockets.Interfaces;
 using System.Buffers.Binary;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Reoria.Engine.Networking.Sockets;
 
-public abstract class SecureSocket(ILogger<ISecureSocket> logger, IPacketRegistry packetRegistry) : ISecureSocket
+public abstract class SecureSocket(ILogger<ISecureSocket> logger, IPacketRegistry packetRegistry, ISocketCancellationRequest cancellationRequest) : ISecureSocket
 {
     protected readonly ILogger<ISecureSocket> Logger = logger;
     protected readonly IPacketRegistry PacketRegistry = packetRegistry;
+    protected readonly ISocketCancellationRequest CancellationRequest = cancellationRequest;
 
     public event Func<Guid, byte[], Task> OnMessageReceived = default!;
+    public event Func<Guid, Task> OnClientConnected = default!;
     public event Func<Guid, Task> OnClientDisconnected = default!;
+
+    protected virtual Task InvokeOnClientConnected(Guid guid)
+        => this.OnClientConnected?.Invoke(guid) ?? Task.CompletedTask;
 
     protected virtual Task InvokeOnClientDisconnected(Guid guid)
         => this.OnClientDisconnected?.Invoke(guid) ?? Task.CompletedTask;
@@ -86,6 +90,12 @@ public abstract class SecureSocket(ILogger<ISecureSocket> logger, IPacketRegistr
                 await (this.OnMessageReceived?.Invoke(connection.Guid, payload) ?? Task.CompletedTask);
 
                 this.PacketRegistry.HandleIncomingData(payload);
+            }
+
+            if (this.CancellationRequest.IsRequested)
+            {
+                await this.CancellationRequest.ProcessAsync(cancellationToken);
+                break;
             }
         }
     }

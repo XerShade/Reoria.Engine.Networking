@@ -16,7 +16,7 @@ public class SecureClientSocket : SecureSocket
     protected readonly int Port;
     protected SecureSocketConnection ServerConnection;
 
-    public SecureClientSocket(ILogger<ISecureSocket> logger, IConfiguration configuration, IPacketRegistry packetRegistry) : base(logger, packetRegistry)
+    public SecureClientSocket(ILogger<ISecureSocket> logger, IConfiguration configuration, IPacketRegistry packetRegistry, ISocketCancellationRequest cancellationRequest) : base(logger, packetRegistry, cancellationRequest)
     {
         this.IPAddress = configuration["Networking:IPAddress"] ?? this.GetDefaultIPAddress();
         this.Port = Convert.ToInt32(configuration["Networking:SecurePort"] ?? this.GetDefaultSecurePort());

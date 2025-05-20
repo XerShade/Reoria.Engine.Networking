@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Certificates\Interfaces\ICertificateProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Certificates\X509CertificateProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Packets\Extensions\ServiceCollectionExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Packets\Interfaces\IPacket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Packets\Interfaces\IPacketFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Packets\Interfaces\IPacketRegistry.cs" />
@@ -18,9 +19,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)Packets\PacketRegistry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\Data\SecureSocketConnection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\Interfaces\ISocket.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Sockets\Interfaces\ISocketCancellationRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Sockets\Packets\CloseSecureSocketPacket.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Sockets\Packets\CloseUDPSocketPacket.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Sockets\Packets\OpenUDPSocketPacket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\SecureSocket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\Interfaces\ISecureSocket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\SecureClientSocket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\SecureServerSocket.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Sockets\SocketCancellationRequest.cs" />
   </ItemGroup>
 </Project>

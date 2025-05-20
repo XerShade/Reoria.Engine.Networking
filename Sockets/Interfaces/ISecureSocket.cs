@@ -14,4 +14,5 @@ public interface ISecureSocket
 
     event Func<Guid, byte[], Task> OnMessageReceived;
     event Func<Guid, Task> OnClientDisconnected;
+    event Func<Guid, Task> OnClientConnected;
 }
