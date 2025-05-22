@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Reoria.Engine.Networking.Managers;
+using Reoria.Engine.Networking.Managers.Interfaces;
 using Reoria.Engine.Networking.Packets.Interfaces;
 using Reoria.Engine.Networking.Sockets.Packets;
 using System.Runtime.CompilerServices;
@@ -24,6 +26,15 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddScopedPacket(this IServiceCollection services, Type implementationType)
         => services.AddScoped(typeof(IPacket), implementationType).AddScoped(implementationType);
+
+    public static IServiceCollection AddNetworkingServices(this IServiceCollection services)
+    {
+        _ = services.AddSingleton<INetworkManager, NetworkManager>();
+        _ = services.AddSingleton<IPacketRegistry, PacketRegistry>();
+        _ = services.AddSingleton<IPacketFactory, PacketFactory>();
+
+        return services;
+    }
 
     public static IServiceCollection AddNetworkingPackets(this IServiceCollection services)
     {

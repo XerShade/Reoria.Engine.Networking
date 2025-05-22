@@ -1,5 +1,6 @@
 ﻿using LiteNetLib.Utils;
 using Microsoft.Extensions.Logging;
+using Reoria.Engine.Networking.Managers.Interfaces;
 using Reoria.Engine.Networking.Packets.Interfaces;
 using System.Collections.Concurrent;
 
@@ -7,9 +8,17 @@ namespace Reoria.Engine.Networking.Packets;
 
 public class PacketRegistry : IPacketRegistry
 {
+    private INetworkManager? networkManager;
+
     protected readonly ILogger<IPacketRegistry> Logger;
     protected readonly IPacketFactory PacketFactory;
     protected readonly ConcurrentDictionary<string, Type> PacketTypes;
+
+    protected INetworkManager NetworkManager
+    {
+        get => this.networkManager ?? throw new NullReferenceException();
+        private set => this.networkManager = value;
+    }
 
     public PacketRegistry(ILogger<IPacketRegistry> logger, IPacketFactory packetFactory, IEnumerable<IPacket> packets)
     {
@@ -26,6 +35,9 @@ public class PacketRegistry : IPacketRegistry
             }
         }
     }
+
+    public virtual async Task AttachNetworkManager(INetworkManager networkManager)
+        => await Task.Run(() => this.NetworkManager = networkManager);
 
     public virtual void HandleIncomingData(byte[] data)
     {

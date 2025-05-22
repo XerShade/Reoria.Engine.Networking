@@ -1,7 +1,6 @@
 ﻿using LiteNetLib.Utils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Reoria.Engine.Networking.Packets.Interfaces;
 using Reoria.Engine.Networking.Sockets.Data;
 using Reoria.Engine.Networking.Sockets.Interfaces;
 using System.Net.Security;
@@ -16,7 +15,7 @@ public class SecureClientSocket : SecureSocket
     protected readonly int Port;
     protected SecureSocketConnection ServerConnection;
 
-    public SecureClientSocket(ILogger<ISecureSocket> logger, IConfiguration configuration, IPacketRegistry packetRegistry, ISocketCancellationRequest cancellationRequest) : base(logger, packetRegistry, cancellationRequest)
+    public SecureClientSocket(ILogger<ISecureSocket> logger, IConfiguration configuration) : base(logger)
     {
         this.IPAddress = configuration["Networking:IPAddress"] ?? this.GetDefaultIPAddress();
         this.Port = Convert.ToInt32(configuration["Networking:SecurePort"] ?? this.GetDefaultSecurePort());
@@ -41,14 +40,14 @@ public class SecureClientSocket : SecureSocket
 
     public override async Task SendAsync<TPacket>(Guid connectionId)
     {
-        NetDataWriter writer = this.PacketRegistry.HandleOutgoingData<TPacket>();
+        NetDataWriter writer = this.NetworkManager.PacketRegistry.HandleOutgoingData<TPacket>();
 
         await this.SendAsync(connectionId, writer.Data);
     }
 
     public override async Task SendAsync(Guid connectionId, Type packetType)
     {
-        NetDataWriter writer = this.PacketRegistry.HandleOutgoingData(packetType);
+        NetDataWriter writer = this.NetworkManager.PacketRegistry.HandleOutgoingData(packetType);
 
         await this.SendAsync(connectionId, writer.Data);
     }
@@ -69,6 +68,14 @@ public class SecureClientSocket : SecureSocket
         this.Logger.LogInformation("Established secure connection to '{IPAddress}:{Port}'.", this.IPAddress, this.Port);
 
         _ = Task.Run(() => this.ReceiveLoop(cancellationToken), cancellationToken);
+    }
+
+    public override Task DisconnectAsync(CancellationToken cancellationToken = default)
+    {
+        this.ServerConnection.Close();
+        this.ServerConnection = new();
+
+        return base.DisconnectAsync(cancellationToken);
     }
 
     protected virtual bool VerifySslCertificate(object sender, X509Certificate? certificate, X509Chain? chain, SslPolicyErrors sslPolicyErrors)

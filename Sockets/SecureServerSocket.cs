@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Reoria.Engine.Networking.Certificates.Interfaces;
-using Reoria.Engine.Networking.Packets.Interfaces;
 using Reoria.Engine.Networking.Sockets.Data;
 using Reoria.Engine.Networking.Sockets.Interfaces;
 using System.Collections.Concurrent;
@@ -22,7 +21,7 @@ public class SecureServerSocket : SecureSocket
     protected readonly X509Certificate Certificate;
     protected TcpListener? Listener;
 
-    public SecureServerSocket(ILogger<ISecureSocket> logger, IConfiguration configuration, ICertificateProvider certificateProvider, IPacketRegistry packetRegistry, ISocketCancellationRequest cancellationRequest) : base(logger, packetRegistry, cancellationRequest)
+    public SecureServerSocket(ILogger<ISecureSocket> logger, IConfiguration configuration, ICertificateProvider certificateProvider) : base(logger)
     {
         string? assemblyName = Assembly.GetExecutingAssembly().GetName().Name ?? "Reoria.Server";
 
@@ -91,7 +90,7 @@ public class SecureServerSocket : SecureSocket
     {
         try
         {
-            NetDataWriter writer = this.PacketRegistry.HandleOutgoingData<TPacket>();
+            NetDataWriter writer = this.NetworkManager.PacketRegistry.HandleOutgoingData<TPacket>();
 
             await this.SendAsync(connectionId, writer.Data);
         }
@@ -105,7 +104,7 @@ public class SecureServerSocket : SecureSocket
     {
         try
         {
-            NetDataWriter writer = this.PacketRegistry.HandleOutgoingData(packetType);
+            NetDataWriter writer = this.NetworkManager.PacketRegistry.HandleOutgoingData(packetType);
 
             await this.SendAsync(connectionId, writer.Data);
         }

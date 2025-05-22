@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Reoria.Engine.Networking.Managers.Interfaces;
 using Reoria.Engine.Networking.Packets.Interfaces;
 using Reoria.Engine.Networking.Sockets.Data;
 using Reoria.Engine.Networking.Sockets.Interfaces;
@@ -6,15 +7,24 @@ using System.Buffers.Binary;
 
 namespace Reoria.Engine.Networking.Sockets;
 
-public abstract class SecureSocket(ILogger<ISecureSocket> logger, IPacketRegistry packetRegistry, ISocketCancellationRequest cancellationRequest) : ISecureSocket
+public abstract class SecureSocket(ILogger<ISecureSocket> logger) : ISecureSocket
 {
+    private INetworkManager? networkManager;
+
     protected readonly ILogger<ISecureSocket> Logger = logger;
-    protected readonly IPacketRegistry PacketRegistry = packetRegistry;
-    protected readonly ISocketCancellationRequest CancellationRequest = cancellationRequest;
+    
+    protected INetworkManager NetworkManager
+    {
+        get => this.networkManager ?? throw new NullReferenceException();
+        private set => this.networkManager = value;
+    }
 
     public event Func<Guid, byte[], Task> OnMessageReceived = default!;
     public event Func<Guid, Task> OnClientConnected = default!;
     public event Func<Guid, Task> OnClientDisconnected = default!;
+
+    public virtual async Task AttachNetworkManager(INetworkManager networkManager)
+        => await Task.Run(() => this.NetworkManager = networkManager);
 
     protected virtual Task InvokeOnClientConnected(Guid guid)
         => this.OnClientConnected?.Invoke(guid) ?? Task.CompletedTask;
@@ -38,6 +48,9 @@ public abstract class SecureSocket(ILogger<ISecureSocket> logger, IPacketRegistr
         => Task.CompletedTask;
 
     public virtual Task ConnectAsync(CancellationToken cancellationToken = default)
+        => Task.CompletedTask;
+
+    public virtual Task DisconnectAsync(CancellationToken cancellationToken = default)
         => Task.CompletedTask;
 
     public virtual bool IsConnectedToServer()
@@ -89,13 +102,7 @@ public abstract class SecureSocket(ILogger<ISecureSocket> logger, IPacketRegistr
                 this.Logger.LogInformation("Read data of length '{DataLength}' from '{ConnectionId}'.", payload.Length, connection.Guid);
                 await (this.OnMessageReceived?.Invoke(connection.Guid, payload) ?? Task.CompletedTask);
 
-                this.PacketRegistry.HandleIncomingData(payload);
-            }
-
-            if (this.CancellationRequest.IsRequested)
-            {
-                await this.CancellationRequest.ProcessAsync(cancellationToken);
-                break;
+                this.NetworkManager.PacketRegistry.HandleIncomingData(payload);
             }
         }
     }

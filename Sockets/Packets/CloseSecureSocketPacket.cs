@@ -5,10 +5,10 @@ using Reoria.Engine.Networking.Sockets.Interfaces;
 
 namespace Reoria.Engine.Networking.Sockets.Packets;
 
-public class CloseSecureSocketPacket(ILogger<CloseSecureSocketPacket> logger, ISocketCancellationRequest cancellationRequest) : IPacket
+public class CloseSecureSocketPacket(ILogger<CloseSecureSocketPacket> logger, ISecureSocket secureSocket) : IPacket
 {
     protected readonly ILogger<CloseSecureSocketPacket> Logger = logger;
-    protected readonly ISocketCancellationRequest CancellationRequest = cancellationRequest;
+    protected readonly ISecureSocket SecureSocket = secureSocket;
 
     public string PacketIdentifier => "Sockets.CloseSecureSocketPacket";
 
@@ -16,7 +16,7 @@ public class CloseSecureSocketPacket(ILogger<CloseSecureSocketPacket> logger, IS
     {
         string message = reader.GetString();
 
-        _ = this.CancellationRequest.DisconnectAsync();
+        _ = this.SecureSocket.DisconnectAsync();
 
         this.Logger.LogInformation("Secure socket was closed by remote host, reason: {message}", message);
     }
