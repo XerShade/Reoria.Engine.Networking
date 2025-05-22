@@ -12,6 +12,7 @@ public abstract class SecureSocket(ILogger<ISecureSocket> logger) : ISecureSocke
     private INetworkManager? networkManager;
 
     protected readonly ILogger<ISecureSocket> Logger = logger;
+    protected bool RequestedDisconnect = false;
     
     protected INetworkManager NetworkManager
     {
@@ -51,6 +52,9 @@ public abstract class SecureSocket(ILogger<ISecureSocket> logger) : ISecureSocke
         => Task.CompletedTask;
 
     public virtual Task DisconnectAsync(CancellationToken cancellationToken = default)
+        => Task.CompletedTask;
+
+    public virtual Task ForceDisconnectAsync(CancellationToken cancellationToken = default)
         => Task.CompletedTask;
 
     public virtual bool IsConnectedToServer()
@@ -103,6 +107,12 @@ public abstract class SecureSocket(ILogger<ISecureSocket> logger) : ISecureSocke
                 await (this.OnMessageReceived?.Invoke(connection.Guid, payload) ?? Task.CompletedTask);
 
                 this.NetworkManager.PacketRegistry.HandleIncomingData(payload);
+            }
+
+            if(this.RequestedDisconnect)
+            {
+                this.RequestedDisconnect = false;
+                await this.ForceDisconnectAsync(cancellationToken);
             }
         }
     }

@@ -14,6 +14,7 @@ public interface ISecureSocket
     Task SendAsync<TPacket>(Guid connectionId) where TPacket : IPacket;
     Task SendAsync(Guid connectionId, Type packetType);
     Task AttachNetworkManager(INetworkManager networkManager);
+    Task ForceDisconnectAsync(CancellationToken cancellationToken = default);
 
     event Func<Guid, byte[], Task> OnMessageReceived;
     event Func<Guid, Task> OnClientDisconnected;

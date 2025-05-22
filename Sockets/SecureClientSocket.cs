@@ -72,10 +72,17 @@ public class SecureClientSocket : SecureSocket
 
     public override Task DisconnectAsync(CancellationToken cancellationToken = default)
     {
+        this.RequestedDisconnect = true;
+
+        return base.DisconnectAsync(cancellationToken);
+    }
+
+    public override Task ForceDisconnectAsync(CancellationToken cancellationToken = default)
+    {
         this.ServerConnection.Close();
         this.ServerConnection = new();
 
-        return base.DisconnectAsync(cancellationToken);
+        return base.ForceDisconnectAsync(cancellationToken);
     }
 
     protected virtual bool VerifySslCertificate(object sender, X509Certificate? certificate, X509Chain? chain, SslPolicyErrors sslPolicyErrors)
