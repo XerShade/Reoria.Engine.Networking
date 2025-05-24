@@ -12,13 +12,16 @@
     <Compile Include="$(MSBuildThisFileDirectory)Certificates\Interfaces\ICertificateProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Certificates\X509CertificateProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Managers\Interfaces\INetworkManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Managers\Interfaces\ISessionManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Managers\NetworkManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Managers\SessionManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Packets\Extensions\ServiceCollectionExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Packets\Interfaces\IPacket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Packets\Interfaces\IPacketFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Packets\Interfaces\IPacketRegistry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Packets\PacketFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Packets\PacketRegistry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Sessions\SocketSession.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\Data\SecureSocketConnection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\Interfaces\ISocket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\Packets\CloseSecureSocketPacket.cs" />
