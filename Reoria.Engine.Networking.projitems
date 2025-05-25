@@ -14,7 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Certificates\Interfaces\ICertificateChainValidator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Certificates\Interfaces\ICertificateGenerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Certificates\Interfaces\ICertificateProvider.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Certificates\X509CertificateGenerator.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Certificates\X509CertificateProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Certificates\X509Certificate2Generator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Certificates\X509Certificate2Provider.cs" />
   </ItemGroup>
 </Project>

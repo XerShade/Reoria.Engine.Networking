@@ -5,9 +5,9 @@ using System.Text;
 
 namespace Reoria.Engine.Networking.Certificates;
 
-public class X509CertificateGenerator : ICertificateGenerator<X509Certificate>
+public class X509Certificate2Generator : ICertificateGenerator<X509Certificate2>
 {
-    public X509Certificate GenerateCertificate(string certPath, string keyPath)
+    public X509Certificate2 GenerateCertificate(string certPath, string keyPath)
     {
         X500DistinguishedNameBuilder distinguishedNameBuilder = new();
         distinguishedNameBuilder.AddCommonName("localhost");

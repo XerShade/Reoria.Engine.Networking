@@ -3,11 +3,11 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace Reoria.Engine.Networking.Certificates;
 
-public class X509CertificateProvider(ICertificateGenerator<X509Certificate> certificateGenerator) : ICertificateProvider<X509Certificate>
+public class X509CertificateProvider(ICertificateGenerator<X509Certificate2> certificateGenerator) : ICertificateProvider<X509Certificate2>
 {
-    protected readonly ICertificateGenerator<X509Certificate> CertificateGenerator = certificateGenerator ?? throw new ArgumentNullException(nameof(certificateGenerator));
+    protected readonly ICertificateGenerator<X509Certificate2> CertificateGenerator = certificateGenerator ?? throw new ArgumentNullException(nameof(certificateGenerator));
 
-    public X509Certificate LoadCertificateFromFile(string certPath, string keyPath)
+    public X509Certificate2 LoadCertificateFromFile(string certPath, string keyPath)
     {
         if (!File.Exists(certPath) || !File.Exists(keyPath))
         {
