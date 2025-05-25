@@ -9,6 +9,9 @@
     <Import_RootNamespace>Reoria.Engine.Networking</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Certificates\DefaultSystemChainValidator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Certificates\DevelopmentSystemChainValidator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Certificates\Interfaces\ICertificateChainValidator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Certificates\Interfaces\ICertificateGenerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Certificates\Interfaces\ICertificateProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Certificates\X509CertificateGenerator.cs" />
