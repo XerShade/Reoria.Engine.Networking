@@ -2,5 +2,5 @@
 
 public interface ISecureClientSocket : ISecureSocketBase
 {
-
+    string IPAddress { get; }
 }
