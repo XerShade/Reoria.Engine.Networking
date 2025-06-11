@@ -1,18 +1,13 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Reoria.Engine.Networking.Sockets.Interfaces;
-using System.Reflection;
 
 namespace Reoria.Engine.Networking.Sockets;
 
-public abstract class SocketBase(ISocketServices socketServices) : ISocketBase
+public abstract class SocketBase(ISocketConfiguration configuration, ISocketServices socketServices) : ISocketBase
 {
     protected readonly ILogger<ISocketBase> Logger = socketServices.Logger;
-    protected readonly IConfiguration Configuration = socketServices.Configuration;
-    protected readonly string AssemblyName = Assembly.GetExecutingAssembly().GetName().Name ?? "Reoria";
+    protected readonly ISocketConfiguration Configuration = configuration;
 
-    public virtual int Port => Convert.ToInt32(this.Configuration["Networking:Port"] ?? this.GetDefaultPort());
-
-    protected virtual string GetDefaultPort()
-        => "7234";
+    public virtual string AssemblyName => this.Configuration.AssemblyName;
+    public virtual int Port => this.Configuration.Port;
 }

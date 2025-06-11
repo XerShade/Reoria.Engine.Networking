@@ -7,14 +7,12 @@ namespace Reoria.Engine.Networking.Sockets.SecureSockets;
 public class SecureServerSocket : SecureSocketBase, ISecureServerSocket
 {
     protected readonly ISessionManager<ISecureSession> SessionManager;
-    public virtual int MaxConnections => Convert.ToInt32(this.Configuration["Networking:MaxConnections"] ?? this.GetDefaultMaxConnections());
 
-    public SecureServerSocket(ISecureSocketServices socketServices, ISessionManager<ISecureSession> sessionManager) 
-        : base(socketServices)
+    public virtual int MaxConnections => this.Configuration.MaxConnections;
+
+    public SecureServerSocket(ISecureSocketConfiguration configuration, ISecureSocketServices socketServices, ISessionManager<ISecureSession> sessionManager) 
+        : base(configuration, socketServices)
     {
         this.SessionManager = sessionManager;
     }
-
-    protected virtual string GetDefaultMaxConnections()
-        => "128";
 }

@@ -7,14 +7,11 @@ public class SecureClientSocket : SecureSocketBase, ISecureClientSocket
 {
     protected readonly ISecureSession Session;
 
-    public virtual string IPAddress => this.Configuration["Networking:IPAddress"] ?? this.GetDefaultIPAddress();
+    public virtual string IPAddress => this.Configuration.IPAddress;
 
-    public SecureClientSocket(ISecureSocketServices socketServices, ISecureSession session) 
-        : base(socketServices)
+    public SecureClientSocket(ISecureSocketConfiguration configuration, ISecureSocketServices socketServices, ISecureSession session) 
+        : base(configuration, socketServices)
     {
         this.Session = session;
     }
-
-    protected virtual string GetDefaultIPAddress()
-        => "127.0.0.1";
 }
