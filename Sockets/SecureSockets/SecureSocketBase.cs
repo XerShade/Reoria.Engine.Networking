@@ -11,9 +11,9 @@ public abstract class SecureSocketBase : SocketBase, ISecureSocketBase
     protected new readonly ISecureSocketConfiguration Configuration;
     protected readonly ISecureSocketBuffer Buffer;
 
-    public SecureSocketBase(ISecureSocketConfiguration configuration, ISecureSocketServices socketServices) : base(configuration, socketServices)
+    public SecureSocketBase(ISecureSocketServices socketServices) : base(socketServices)
     {
-        this.Configuration = configuration;
+        this.Configuration = socketServices.Configuration;
         this.Buffer = socketServices.Buffer;
 
         this.Logger.LogInformation("Created secure socket with '{SocketType}' for assembly '{AssemblyName}'.", this.GetType().Name, this.AssemblyName);

@@ -1,11 +1,10 @@
 ﻿using Reoria.Engine.Networking.Sessions.Interfaces;
-using Reoria.Engine.Networking.Sockets.Configuration.Interfaces;
 using Reoria.Engine.Networking.Sockets.SecureSockets.Interfaces;
 using Reoria.Engine.Networking.Sockets.Services.Interfaces;
 
 namespace Reoria.Engine.Networking.Sockets.SecureSockets;
 
-public class SecureClientSocket(ISecureSocketConfiguration configuration, ISecureClientSocketServices socketServices) : SecureSocketBase(configuration, socketServices), ISecureClientSocket
+public class SecureClientSocket(ISecureClientSocketServices socketServices) : SecureSocketBase(socketServices), ISecureClientSocket
 {
     protected readonly ISecureSession Session = socketServices.Session;
 
