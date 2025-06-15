@@ -12,13 +12,13 @@ public class SecureSession : Session, ISecureSession
     public TcpClient TcpClient { get => tcpClient ?? throw new NullReferenceException(); protected set => tcpClient = value; }
     public SslStream SslStream { get => sslStream ?? throw new NullReferenceException(); protected set => sslStream = value; }
 
-    public virtual ISession AssignTcpClient(TcpClient tcpClient)
+    public virtual ISecureSession AssignTcpClient(TcpClient tcpClient)
     {
         this.TcpClient = tcpClient;
         return this;
     }
 
-    public virtual ISession AssignSslStream(SslStream sslStream)
+    public virtual ISecureSession AssignSslStream(SslStream sslStream)
     {
         this.SslStream = sslStream;
         return this;

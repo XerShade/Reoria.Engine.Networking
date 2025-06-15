@@ -8,6 +8,6 @@ public interface ISecureSession : ISession
     TcpClient TcpClient { get; }
     SslStream SslStream { get; }
 
-    ISession AssignSslStream(SslStream sslStream);
-    ISession AssignTcpClient(TcpClient tcpClient);
+    ISecureSession AssignSslStream(SslStream sslStream);
+    ISecureSession AssignTcpClient(TcpClient tcpClient);
 }

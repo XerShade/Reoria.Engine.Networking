@@ -10,6 +10,8 @@ public class SessionManager<TSession>(IServiceProvider serviceProvider) : ISessi
     protected readonly IServiceProvider ServiceProvider = serviceProvider;
     protected readonly ConcurrentDictionary<Guid, TSession> Sessions = [];
 
+    public int Count => this.Sessions.Count;
+
     public TSession Create()
     {
         TSession session = this.ServiceProvider.GetRequiredService<TSession>();

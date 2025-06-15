@@ -4,6 +4,8 @@ namespace Reoria.Engine.Networking.Managers.Interfaces;
 
 public interface ISessionManager<TSession> where TSession : ISession
 {
+    int Count { get; }
+
     TSession Create();
     bool Close(Guid id);
     TSession GetSession(Guid id);
