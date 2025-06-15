@@ -4,15 +4,10 @@ using Reoria.Engine.Networking.Sockets.SecureSockets.Interfaces;
 
 namespace Reoria.Engine.Networking.Sockets.SecureSockets;
 
-public class SecureServerSocket : SecureSocketBase, ISecureServerSocket
+public class SecureServerSocket(ISecureSocketConfiguration configuration, ISecureServerSocketServices socketServices) 
+    : SecureSocketBase(configuration, socketServices), ISecureServerSocket
 {
-    protected readonly ISessionManager<ISecureSession> SessionManager;
+    protected readonly ISessionManager<ISecureSession> SessionManager = socketServices.SessionManager;
 
     public virtual int MaxConnections => this.Configuration.MaxConnections;
-
-    public SecureServerSocket(ISecureSocketConfiguration configuration, ISecureSocketServices socketServices, ISessionManager<ISecureSession> sessionManager) 
-        : base(configuration, socketServices)
-    {
-        this.SessionManager = sessionManager;
-    }
 }
