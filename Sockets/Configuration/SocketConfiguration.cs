@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Reoria.Engine.Networking.Sockets.Interfaces;
+using Reoria.Engine.Networking.Sockets.Configuration.Interfaces;
 using System.Reflection;
 
-namespace Reoria.Engine.Networking.Sockets;
+namespace Reoria.Engine.Networking.Sockets.Configuration;
 
 public class SocketConfiguration(IConfiguration configuration) : ISocketConfiguration
 {

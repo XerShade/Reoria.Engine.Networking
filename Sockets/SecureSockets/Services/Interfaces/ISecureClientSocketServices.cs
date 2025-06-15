@@ -1,6 +1,6 @@
 ﻿using Reoria.Engine.Networking.Sessions.Interfaces;
 
-namespace Reoria.Engine.Networking.Sockets.SecureSockets.Interfaces;
+namespace Reoria.Engine.Networking.Sockets.SecureSockets.Services.Interfaces;
 
 public interface ISecureClientSocketServices : ISecureSocketServices
 {

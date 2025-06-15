@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Reoria.Engine.Networking.Sockets.Interfaces;
+using Reoria.Engine.Networking.Sockets.Services.Interfaces;
 
-namespace Reoria.Engine.Networking.Sockets;
+namespace Reoria.Engine.Networking.Sockets.Services;
 
 public class SocketServices(ILogger<ISocketBase> logger, IConfiguration configuration) : ISocketServices
 {

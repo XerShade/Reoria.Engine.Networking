@@ -1,4 +1,4 @@
-﻿namespace Reoria.Engine.Networking.Sockets.Interfaces;
+﻿namespace Reoria.Engine.Networking.Sockets.Configuration.Interfaces;
 
 public interface ISocketConfiguration
 {
