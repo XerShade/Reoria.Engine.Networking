@@ -1,12 +1,12 @@
 ﻿using Reoria.Engine.Networking.Sessions.Interfaces;
 using Reoria.Engine.Networking.Sockets.SecureSockets.Interfaces;
-using Reoria.Engine.Networking.Sockets.Services.Interfaces;
+using Reoria.Engine.Networking.Sockets.Services.Injectors.Interfaces;
 
 namespace Reoria.Engine.Networking.Sockets.SecureSockets;
 
-public class SecureClientSocket(ISecureClientSocketServices socketServices) : SecureSocketBase(socketServices), ISecureClientSocket
+public class SecureClientSocket(ISecureClientSocketServiceInjector serviceInjector) : SecureSocketBase(serviceInjector), ISecureClientSocket
 {
-    protected readonly ISecureSession Session = socketServices.Session;
+    protected readonly ISecureSession Session = serviceInjector.Session;
 
     public virtual string IPAddress => this.Configuration.IPAddress;
 }

@@ -28,21 +28,21 @@
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\Configuration\SecureSocketConfiguration.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\Interfaces\ISocketBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\Configuration\Interfaces\ISocketConfiguration.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Sockets\Services\Interfaces\ISecureClientSocketServices.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Sockets\Services\Interfaces\ISecureServerSocketServices.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Sockets\Services\Interfaces\ISecureSocketServices.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Sockets\Services\Interfaces\ISocketServices.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Sockets\Services\Injectors\Interfaces\ISecureClientSocketServiceInjector.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Sockets\Services\Injectors\Interfaces\ISecureServerSocketServiceInjector.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Sockets\Services\Injectors\Interfaces\ISecureSocketServiceInjector.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Sockets\Services\Injectors\Interfaces\ISocketServiceInjector.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\SecureSockets\Interfaces\ISecureClientSocket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\SecureSockets\Interfaces\ISecureServerSocket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\SecureSockets\Interfaces\ISecureSocketBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\SecureSockets\SecureClientSocket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\SecureSockets\SecureServerSocket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\SecureSockets\SecureSocketBase.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Sockets\Services\SecureClientSocketServices.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Sockets\Services\SecureServerSocketServices.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Sockets\Services\SecureSocketServices.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Sockets\Services\Injectors\SecureClientSocketServiceInjector.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Sockets\Services\Injectors\SecureServerSocketServiceInjector.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Sockets\Services\Injectors\SecureSocketServiceInjector.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\SocketBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sockets\Configuration\SocketConfiguration.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Sockets\Services\SocketServices.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Sockets\Services\Injectors\SocketServiceInjector.cs" />
   </ItemGroup>
 </Project>
