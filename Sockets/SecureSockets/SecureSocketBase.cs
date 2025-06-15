@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using Reoria.Engine.Networking.Sockets.Buffers.Interfaces;
-using Reoria.Engine.Networking.Sockets.SecureSockets.Configuration.Interfaces;
+using Reoria.Engine.Networking.Sockets.Configuration.Interfaces;
 using Reoria.Engine.Networking.Sockets.SecureSockets.Interfaces;
-using Reoria.Engine.Networking.Sockets.SecureSockets.Services.Interfaces;
+using Reoria.Engine.Networking.Sockets.Services.Interfaces;
 
 namespace Reoria.Engine.Networking.Sockets.SecureSockets;
 

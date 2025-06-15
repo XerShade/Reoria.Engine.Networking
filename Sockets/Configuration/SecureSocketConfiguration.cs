@@ -1,8 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Reoria.Engine.Networking.Sockets.Configuration;
-using Reoria.Engine.Networking.Sockets.SecureSockets.Configuration.Interfaces;
+using Reoria.Engine.Networking.Sockets.Configuration.Interfaces;
 
-namespace Reoria.Engine.Networking.Sockets.SecureSockets.Configuration;
+namespace Reoria.Engine.Networking.Sockets.Configuration;
 
 public class SecureSocketConfiguration(IConfiguration configuration) : SocketConfiguration(configuration), ISecureSocketConfiguration
 {
