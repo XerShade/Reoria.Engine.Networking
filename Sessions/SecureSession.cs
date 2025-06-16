@@ -12,6 +12,9 @@ public class SecureSession : Session, ISecureSession
     public TcpClient TcpClient { get => tcpClient ?? throw new NullReferenceException(); protected set => tcpClient = value; }
     public SslStream SslStream { get => sslStream ?? throw new NullReferenceException(); protected set => sslStream = value; }
 
+    public bool IsTcpClientNull => this.tcpClient is null;
+    public bool IsSslStreamNull => this.sslStream is null;
+
     public virtual ISecureSession AssignTcpClient(TcpClient tcpClient)
     {
         this.TcpClient = tcpClient;

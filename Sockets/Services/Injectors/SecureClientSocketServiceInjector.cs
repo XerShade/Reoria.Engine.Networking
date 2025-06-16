@@ -10,9 +10,9 @@ using System.Security.Cryptography.X509Certificates;
 namespace Reoria.Engine.Networking.Sockets.Services.Injectors;
 
 public class SecureClientSocketServiceInjector(ILogger<ISocketBase> logger, ISecureSocketConfiguration configuration, ISecureSocketBuffer buffer,
-    ISecureSession secureSession, ICertificateChainValidator<X509Certificate, X509Chain> certificateChainValidator)
+    ISecureSession secureSession, ICertificateChainValidator<X509Certificate2, X509Chain> certificateChainValidator)
     : SecureSocketServiceInjector(logger, configuration, buffer), ISecureClientSocketServiceInjector
 {
     public ISecureSession Session { get; init; } = secureSession;
-    public ICertificateChainValidator<X509Certificate, X509Chain> CertificateChainValidator { get; init; } = certificateChainValidator;
+    public ICertificateChainValidator<X509Certificate2, X509Chain> CertificateChainValidator { get; init; } = certificateChainValidator;
 }

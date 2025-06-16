@@ -99,6 +99,8 @@ public class SecureServerSocket(ISecureServerSocketServiceInjector serviceInject
             await this.InvokeOnClientDisconnected(session.Id);
             this.Logger.LogInformation("Closed secure socket connection from '{ConnectionEndpoint}'.", session.TcpClient.Client.RemoteEndPoint);
         }
+
+        _ = session.Close();
     }
 
     protected virtual Task InvokeOnClientConnected(Guid guid)

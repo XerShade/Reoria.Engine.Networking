@@ -12,7 +12,7 @@ namespace Reoria.Engine.Networking.Sockets.SecureSockets;
 public class SecureClientSocket(ISecureClientSocketServiceInjector serviceInjector) : SecureSocketBase(serviceInjector), ISecureClientSocket
 {
     protected readonly ISecureSession Session = serviceInjector.Session;
-    protected readonly ICertificateChainValidator<X509Certificate, X509Chain> CertificateChainValidator = serviceInjector.CertificateChainValidator;
+    protected readonly ICertificateChainValidator<X509Certificate2, X509Chain> CertificateChainValidator = serviceInjector.CertificateChainValidator;
 
     public virtual string IPAddress => this.Configuration.IPAddress;
 
@@ -41,8 +41,15 @@ public class SecureClientSocket(ISecureClientSocketServiceInjector serviceInject
         return Task.CompletedTask;
     }
 
-    protected virtual bool VerifySslCertificate(object sender, X509Certificate? certificate, X509Chain? chain, SslPolicyErrors sslPolicyErrors) 
-        => this.CertificateChainValidator.Validate(certificate ?? throw new NullReferenceException(), chain);
+    protected virtual bool VerifySslCertificate(object sender, X509Certificate? certificate, X509Chain? chain, SslPolicyErrors sslPolicyErrors)
+    {
+        if (certificate is not X509Certificate2 cert2)
+        {
+            throw new InvalidOperationException($"The certificate passed to the validation callback is of type {certificate?.GetType().FullName}, expected X509Certificate2.");
+        }
+
+        return this.CertificateChainValidator.Validate(cert2, chain ?? throw new NullReferenceException());
+    }
 
     protected virtual async Task ReceiveLoop(CancellationToken cancellationToken)
     {
@@ -59,7 +66,7 @@ public class SecureClientSocket(ISecureClientSocketServiceInjector serviceInject
 
     public virtual bool IsConnectedToServer()
     {
-        if (this.Session.TcpClient != null)
+        if (!this.Session.IsTcpClientNull)
         {
             return this.Session.TcpClient.Connected;
         }

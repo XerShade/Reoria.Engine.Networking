@@ -16,7 +16,7 @@ public class SessionManager<TSession>(IServiceProvider serviceProvider) : ISessi
     {
         TSession session = this.ServiceProvider.GetRequiredService<TSession>();
 
-        this.Sessions[session.Id] = session;
+        _ = this.Sessions.TryAdd(session.Id, session);
 
         return session;
     }
@@ -25,8 +25,6 @@ public class SessionManager<TSession>(IServiceProvider serviceProvider) : ISessi
     {
         bool result = this.Sessions.TryRemove(id, out TSession? session);
 
-        _ = session?.Close();
-
         return result;
     }
 
@@ -34,16 +32,12 @@ public class SessionManager<TSession>(IServiceProvider serviceProvider) : ISessi
     {
         bool result = this.Sessions.TryRemove(session.Id, out _);
 
-        _ = session?.Close();
-
         return result;
     }
 
     public bool Close(Guid id, out TSession? session)
     {
         bool result = this.Sessions.TryRemove(id, out session);
-
-        _ = session?.Close();
 
         return result;
     }

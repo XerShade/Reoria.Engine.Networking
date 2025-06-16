@@ -3,7 +3,7 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace Reoria.Engine.Networking.Certificates;
 
-public class X509CertificateProvider(ICertificateGenerator<X509Certificate2> certificateGenerator) : ICertificateProvider<X509Certificate2>
+public class X509Certificate2Provider(ICertificateGenerator<X509Certificate2> certificateGenerator) : ICertificateProvider<X509Certificate2>
 {
     protected readonly ICertificateGenerator<X509Certificate2> CertificateGenerator = certificateGenerator ?? throw new ArgumentNullException(nameof(certificateGenerator));
 

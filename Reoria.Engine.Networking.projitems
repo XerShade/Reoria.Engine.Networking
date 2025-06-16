@@ -16,6 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Certificates\Interfaces\ICertificateProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Certificates\X509Certificate2Generator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Certificates\X509Certificate2Provider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IServiceCollectionExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Managers\Interfaces\ISecureSessionManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Managers\Interfaces\ISessionManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Managers\SecureSessionManager.cs" />

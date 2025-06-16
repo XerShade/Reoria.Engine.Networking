@@ -7,5 +7,5 @@ namespace Reoria.Engine.Networking.Sockets.Services.Injectors.Interfaces;
 public interface ISecureClientSocketServiceInjector : ISecureSocketServiceInjector
 {
     ISecureSession Session { get; init; }
-    ICertificateChainValidator<X509Certificate, X509Chain> CertificateChainValidator { get; init; }
+    ICertificateChainValidator<X509Certificate2, X509Chain> CertificateChainValidator { get; init; }
 }
