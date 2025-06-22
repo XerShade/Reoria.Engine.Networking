@@ -2,6 +2,7 @@
 using Reoria.Engine.Networking.Sockets.Configuration.Interfaces;
 using Reoria.Engine.Networking.Sockets.Interfaces;
 using Reoria.Engine.Networking.Sockets.Services.Injectors.Interfaces;
+using Reoria.Engine.Signals.Interfaces;
 
 namespace Reoria.Engine.Networking.Sockets;
 
@@ -9,6 +10,7 @@ public abstract class SocketBase(ISocketServiceInjector serviceInjector) : ISock
 {
     protected readonly ILogger<ISocketBase> Logger = serviceInjector.Logger;
     protected readonly ISocketConfiguration Configuration = serviceInjector.Configuration;
+    protected readonly ISignalBus SignalBus = serviceInjector.SignalBus;
 
     public virtual string AssemblyName => this.Configuration.AssemblyName;
     public virtual int Port => this.Configuration.Port;

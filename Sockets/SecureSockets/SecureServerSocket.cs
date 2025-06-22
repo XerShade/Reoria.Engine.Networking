@@ -23,9 +23,6 @@ public class SecureServerSocket(ISecureServerSocketServiceInjector serviceInject
     protected X509Certificate2 Certificate { get => this.certificate ?? throw new NullReferenceException(); set => this.certificate = value; }
     protected TcpListener TcpListener { get => this.tcpListener ?? throw new NullReferenceException(); set => this.tcpListener = value; }
 
-    public event Func<Guid, Task> OnClientConnected = default!;
-    public event Func<Guid, Task> OnClientDisconnected = default!;
-
     public virtual int MaxConnections => this.Configuration.MaxConnections;
 
     public virtual async Task StartAsync(CancellationToken cancellationToken = default)
@@ -104,8 +101,8 @@ public class SecureServerSocket(ISecureServerSocketServiceInjector serviceInject
     }
 
     protected virtual Task InvokeOnClientConnected(Guid guid)
-        => this.OnClientConnected?.Invoke(guid) ?? Task.CompletedTask;
+        => Task.Run(() => this.SignalBus.Emit("SecureServerSocket.OnClientConnected", guid));
 
     protected virtual Task InvokeOnClientDisconnected(Guid guid)
-        => this.OnClientDisconnected?.Invoke(guid) ?? Task.CompletedTask;
+        => Task.Run(() => this.SignalBus.Emit("SecureServerSocket.OnClientDisconnected", guid));
 }
