@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Reoria.Engine.Container.Registrars;
+using Reoria.Engine.Container.Services.Interfaces;
 using Reoria.Engine.Networking.Certificates;
 using Reoria.Engine.Networking.Certificates.Interfaces;
 using Reoria.Engine.Networking.Managers;
@@ -19,38 +20,39 @@ using System.Security.Cryptography.X509Certificates;
 namespace Reoria.Engine.Networking.Registrars;
 public class NetworkServicesRegistrar : IServiceRegistrar
 {
-    public void RegisterServices(IServiceCollection services)
+    public void RegisterServices(IServiceRegistryGuard registryGuard)
     {
         // General services.
-        _ = services.AddTransient<ISession, Session>();
-        _ = services.AddTransient<ISecureSession, SecureSession>();
-        _ = services.AddTransient<ISecureSocketBuffer, SecureSocketBuffer>();
-        _ = services.AddTransient<ISocketConfiguration, SocketConfiguration>();
-        _ = services.AddTransient<ISecureSocketConfiguration, SecureSocketConfiguration>();
-        _ = services.AddTransient<ISocketServiceInjector, SocketServiceInjector>();
-        _ = services.AddTransient<ISecureSocketServiceInjector, SecureSocketServiceInjector>();
+        registryGuard.TryRegister<ISession, Session>(ServiceLifetime.Transient);
+        registryGuard.TryRegister<ISecureSession, SecureSession>(ServiceLifetime.Transient);
+        registryGuard.TryRegister<ISecureSocketBuffer, SecureSocketBuffer>(ServiceLifetime.Transient);
+        registryGuard.TryRegister<ISocketConfiguration, SocketConfiguration>(ServiceLifetime.Transient);
+        registryGuard.TryRegister<ISecureSocketConfiguration, SecureSocketConfiguration>(ServiceLifetime.Transient);
+        registryGuard.TryRegister<ISocketServiceInjector, SocketServiceInjector>(ServiceLifetime.Transient);
+        registryGuard.TryRegister<ISecureSocketServiceInjector, SecureSocketServiceInjector>(ServiceLifetime.Transient);
 
         // Client side services.
-        _ = this.AddCertficateChainValidator(services);
-        _ = services.AddSingleton<ISecureClientSocket, SecureClientSocket>();
-        _ = services.AddTransient<ISecureClientSocketServiceInjector, SecureClientSocketServiceInjector>();
+        this.AddCertficateChainValidator(registryGuard);
+        registryGuard.TryRegister<ISecureClientSocket, SecureClientSocket>(ServiceLifetime.Singleton);
+        registryGuard.TryRegister<ISecureClientSocketServiceInjector, SecureClientSocketServiceInjector>(ServiceLifetime.Transient);
 
         // Server side services.
-        _ = services.AddTransient<ICertificateGenerator<X509Certificate2>, X509Certificate2Generator>();
-        _ = services.AddTransient<ICertificateProvider<X509Certificate2>, X509Certificate2Provider>();
-        _ = services.AddSingleton<ISessionManager<ISession>, SessionManager<ISession>>();
-        _ = services.AddSingleton<ISecureSessionManager<ISecureSession>, SecureSessionManager<ISecureSession>>();
-        _ = services.AddSingleton<ISecureServerSocket, SecureServerSocket>();
-        _ = services.AddTransient<ISecureServerSocketServiceInjector, SecureServerSocketServiceInjector>();
+        registryGuard.TryRegister<ICertificateGenerator<X509Certificate2>, X509Certificate2Generator>(ServiceLifetime.Transient);
+        registryGuard.TryRegister<ICertificateProvider<X509Certificate2>, X509Certificate2Provider>(ServiceLifetime.Transient);
+        registryGuard.TryRegister<ISessionManager<ISession>, SessionManager<ISession>>(ServiceLifetime.Singleton);
+        registryGuard.TryRegister<ISecureSessionManager<ISecureSession>, SecureSessionManager<ISecureSession>>(ServiceLifetime.Singleton);
+        registryGuard.TryRegister<ISecureServerSocket, SecureServerSocket>(ServiceLifetime.Singleton);
+        registryGuard.TryRegister<ISecureServerSocketServiceInjector, SecureServerSocketServiceInjector>(ServiceLifetime.Transient);
     }
 
-    protected virtual IServiceCollection AddCertficateChainValidator(IServiceCollection services)
+    protected virtual void AddCertficateChainValidator(IServiceRegistryGuard registryGuard)
     {
 #if !DEBUG
-        _ = services.AddTransient<ICertificateChainValidator<X509Certificate2, X509Chain>, DefaultSystemChainValidator>();
+        ArgumentNullException.ThrowIfNull(registryGuard);
+        registryGuard.TryRegister<ICertificateChainValidator<X509Certificate2, X509Chain>, DefaultSystemChainValidator>(ServiceLifetime.Transient);
 #else
-        _ = services.AddTransient<ICertificateChainValidator<X509Certificate2, X509Chain>, DevelopmentSystemChainValidator>();
+        ArgumentNullException.ThrowIfNull(registryGuard);
+        registryGuard.TryRegister<ICertificateChainValidator<X509Certificate2, X509Chain>, DevelopmentSystemChainValidator>(ServiceLifetime.Transient);
 #endif
-        return services;
     }
 }
