@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Reoria.Engine.Container.Registrars;
 using Reoria.Engine.Networking.Certificates;
 using Reoria.Engine.Networking.Certificates.Interfaces;
 using Reoria.Engine.Networking.Managers;
@@ -15,12 +16,12 @@ using Reoria.Engine.Networking.Sockets.Services.Injectors;
 using Reoria.Engine.Networking.Sockets.Services.Injectors.Interfaces;
 using System.Security.Cryptography.X509Certificates;
 
-namespace Reoria.Engine.Networking.Extensions;
-
-public static class IServiceCollectionExtensions
+namespace Reoria.Engine.Networking.Registrars;
+public class NetworkServicesRegistrar : IServiceRegistrar
 {
-    public static IServiceCollection AddNetworkingServices(this IServiceCollection services)
+    public void RegisterServices(IServiceCollection services)
     {
+        // General services.
         _ = services.AddTransient<ISession, Session>();
         _ = services.AddTransient<ISecureSession, SecureSession>();
         _ = services.AddTransient<ISecureSocketBuffer, SecureSocketBuffer>();
@@ -29,34 +30,21 @@ public static class IServiceCollectionExtensions
         _ = services.AddTransient<ISocketServiceInjector, SocketServiceInjector>();
         _ = services.AddTransient<ISecureSocketServiceInjector, SecureSocketServiceInjector>();
 
-        return services;
-    }
-
-    public static IServiceCollection AddClientNetworkingServices(this IServiceCollection services)
-    {
-        _ = services.AddNetworkingServices();
-        _ = services.AddCertficateChainValidator();
+        // Client side services.
+        _ = this.AddCertficateChainValidator(services);
         _ = services.AddSingleton<ISecureClientSocket, SecureClientSocket>();
         _ = services.AddTransient<ISecureClientSocketServiceInjector, SecureClientSocketServiceInjector>();
 
-        return services;
-    }
-
-    public static IServiceCollection AddServerNetworkingServices(this IServiceCollection services)
-    {
-        _ = services.AddNetworkingServices();
-
+        // Server side services.
         _ = services.AddTransient<ICertificateGenerator<X509Certificate2>, X509Certificate2Generator>();
         _ = services.AddTransient<ICertificateProvider<X509Certificate2>, X509Certificate2Provider>();
         _ = services.AddSingleton<ISessionManager<ISession>, SessionManager<ISession>>();
         _ = services.AddSingleton<ISecureSessionManager<ISecureSession>, SecureSessionManager<ISecureSession>>();
         _ = services.AddSingleton<ISecureServerSocket, SecureServerSocket>();
         _ = services.AddTransient<ISecureServerSocketServiceInjector, SecureServerSocketServiceInjector>();
-
-        return services;
     }
 
-    public static IServiceCollection AddCertficateChainValidator(this IServiceCollection services)
+    protected virtual IServiceCollection AddCertficateChainValidator(IServiceCollection services)
     {
 #if !DEBUG
         _ = services.AddTransient<ICertificateChainValidator<X509Certificate2, X509Chain>, DefaultSystemChainValidator>();

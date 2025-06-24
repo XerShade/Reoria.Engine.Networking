@@ -16,11 +16,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Certificates\Interfaces\ICertificateProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Certificates\X509Certificate2Generator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Certificates\X509Certificate2Provider.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IServiceCollectionExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Managers\Interfaces\ISecureSessionManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Managers\Interfaces\ISessionManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Managers\SecureSessionManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Managers\SessionManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Registrars\NetworkServicesRegistrar.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sessions\Interfaces\ISecureSession.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sessions\Interfaces\ISession.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sessions\SecureSession.cs" />
