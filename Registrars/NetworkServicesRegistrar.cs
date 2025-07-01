@@ -1,6 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Autofac;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Reoria.Engine.Container.Registrars;
-using Reoria.Engine.Container.Services.Interfaces;
 using Reoria.Engine.Networking.Certificates;
 using Reoria.Engine.Networking.Certificates.Interfaces;
 using Reoria.Engine.Networking.Managers;
@@ -20,39 +21,42 @@ using System.Security.Cryptography.X509Certificates;
 namespace Reoria.Engine.Networking.Registrars;
 public class NetworkServicesRegistrar : IServiceRegistrar
 {
-    public void RegisterServices(IServiceRegistryGuard registryGuard)
+    public void RegisterServices(ContainerBuilder builder, IConfiguration configuration, ILoggerFactory loggerFactory)
     {
         // General services.
-        registryGuard.TryRegister<ISession, Session>(ServiceLifetime.Transient);
-        registryGuard.TryRegister<ISecureSession, SecureSession>(ServiceLifetime.Transient);
-        registryGuard.TryRegister<ISecureSocketBuffer, SecureSocketBuffer>(ServiceLifetime.Transient);
-        registryGuard.TryRegister<ISocketConfiguration, SocketConfiguration>(ServiceLifetime.Transient);
-        registryGuard.TryRegister<ISecureSocketConfiguration, SecureSocketConfiguration>(ServiceLifetime.Transient);
-        registryGuard.TryRegister<ISocketServiceInjector, SocketServiceInjector>(ServiceLifetime.Transient);
-        registryGuard.TryRegister<ISecureSocketServiceInjector, SecureSocketServiceInjector>(ServiceLifetime.Transient);
+        _ = builder.RegisterType<Session>().As<ISession>().InstancePerDependency();
+        _ = builder.RegisterType<SecureSession>().As<ISecureSession>().InstancePerDependency();
+        _ = builder.RegisterType<SecureSocketBuffer>().As<ISecureSocketBuffer>().InstancePerDependency();
+        _ = builder.RegisterType<SocketConfiguration>().As<ISocketConfiguration>().InstancePerDependency();
+        _ = builder.RegisterType<SecureSocketConfiguration>().As<ISecureSocketConfiguration>().InstancePerDependency();
+        _ = builder.RegisterType<SocketServiceInjector>().As<ISocketServiceInjector>().InstancePerDependency();
+        _ = builder.RegisterType<SecureSocketServiceInjector>().As<ISecureSocketServiceInjector>().InstancePerDependency();
 
         // Client side services.
-        this.AddCertficateChainValidator(registryGuard);
-        registryGuard.TryRegister<ISecureClientSocket, SecureClientSocket>(ServiceLifetime.Singleton);
-        registryGuard.TryRegister<ISecureClientSocketServiceInjector, SecureClientSocketServiceInjector>(ServiceLifetime.Transient);
+        _ = this.AddCertficateChainValidator(builder, configuration, loggerFactory);
+        _ = builder.RegisterType<SecureClientSocket>().As<ISecureClientSocket>().SingleInstance();
+        _ = builder.RegisterType<SecureClientSocketServiceInjector>().As<ISecureClientSocketServiceInjector>().InstancePerDependency();
 
         // Server side services.
-        registryGuard.TryRegister<ICertificateGenerator<X509Certificate2>, X509Certificate2Generator>(ServiceLifetime.Transient);
-        registryGuard.TryRegister<ICertificateProvider<X509Certificate2>, X509Certificate2Provider>(ServiceLifetime.Transient);
-        registryGuard.TryRegister<ISessionManager<ISession>, SessionManager<ISession>>(ServiceLifetime.Singleton);
-        registryGuard.TryRegister<ISecureSessionManager<ISecureSession>, SecureSessionManager<ISecureSession>>(ServiceLifetime.Singleton);
-        registryGuard.TryRegister<ISecureServerSocket, SecureServerSocket>(ServiceLifetime.Singleton);
-        registryGuard.TryRegister<ISecureServerSocketServiceInjector, SecureServerSocketServiceInjector>(ServiceLifetime.Transient);
+        _ = builder.RegisterType<X509Certificate2Generator>().As<ICertificateGenerator<X509Certificate2>>().InstancePerDependency();
+        _ = builder.RegisterType<X509Certificate2Provider>().As<ICertificateProvider<X509Certificate2>>().InstancePerDependency();
+        _ = builder.RegisterType<SessionManager<ISession>>().As<ISessionManager<ISession>>().SingleInstance();
+        _ = builder.RegisterType<SecureSessionManager<ISecureSession>>().As<ISecureSessionManager<ISecureSession>>().SingleInstance();
+        _ = builder.RegisterType<SecureServerSocket>().As<ISecureServerSocket>().SingleInstance();
+        _ = builder.RegisterType<SecureServerSocketServiceInjector>().As<ISecureServerSocketServiceInjector>().InstancePerDependency();
     }
 
-    protected virtual void AddCertficateChainValidator(IServiceRegistryGuard registryGuard)
+    protected virtual ContainerBuilder AddCertficateChainValidator(ContainerBuilder builder, IConfiguration configuration, ILoggerFactory loggerFactory)
     {
 #if !DEBUG
-        ArgumentNullException.ThrowIfNull(registryGuard);
-        registryGuard.TryRegister<ICertificateChainValidator<X509Certificate2, X509Chain>, DefaultSystemChainValidator>(ServiceLifetime.Transient);
+        builder.RegisterType<DefaultSystemChainValidator>()
+               .As<ICertificateChainValidator<X509Certificate2, X509Chain>>()
+               .InstancePerDependency();
 #else
-        ArgumentNullException.ThrowIfNull(registryGuard);
-        registryGuard.TryRegister<ICertificateChainValidator<X509Certificate2, X509Chain>, DevelopmentSystemChainValidator>(ServiceLifetime.Transient);
+        builder.RegisterType<DevelopmentSystemChainValidator>()
+               .As<ICertificateChainValidator<X509Certificate2, X509Chain>>()
+               .InstancePerDependency();
 #endif
+        return builder;
     }
 }
